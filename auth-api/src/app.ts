@@ -5,7 +5,7 @@ import loginRoutes from './routes/signin.ts'
 
 const app = express()
 
-dotenv.config({path: './.env'})
+dotenv.config({path: './.env.development'})
 
 //Middleware
 app.use(express.json())
@@ -15,7 +15,7 @@ app.get('/api/healty', (req: Request, res: Response) => { res.send('Auth server 
 app.use('/api/', loginRoutes)
 
 app.listen(process.env.SERVER_PORT, () => {
-  console.log(`Server is running on port: 3001`)
+  console.log(`Server is running on port: ${process.env.SERVER_PORT}`)
 })
 
 export default app
