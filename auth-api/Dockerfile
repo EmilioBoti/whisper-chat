@@ -10,10 +10,6 @@ ARG NODE_VERSION=24.12.0
 
 FROM node:${NODE_VERSION}-alpine
 
-# Use development node environment by default.
-ENV NODE_ENV=development
-
-
 WORKDIR /usr/src/app
 
 # Download dependencies as a separate step to take advantage of Docker's caching.

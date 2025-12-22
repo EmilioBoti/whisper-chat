@@ -1,0 +1,8 @@
+services:
+  auth-api:
+    image: node:24.12.0
+    build: ./auth-api
+    ports:
+      - 3001:3001
+    environment:
+      NODE_ENV: development

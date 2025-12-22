@@ -14,8 +14,8 @@ app.use(express.json())
 app.get('/api/healty', (req: Request, res: Response) => { res.send('Auth server is running!') })
 app.use('/api/', loginRoutes)
 
-app.listen(process.env.SERVER_PORT, () => {
-  console.log(`Server is running on port: ${process.env.SERVER_PORT}`)
+app.listen(process.env.AUTH_SERVER_PORT, () => {
+  console.log(`Server is running on port: ${process.env.AUTH_SERVER_PORT}`)
 })
 
 export default app
