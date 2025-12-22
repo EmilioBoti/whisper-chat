@@ -4,8 +4,8 @@ services:
     build: ./auth-api
     ports:
       - 3001:3001
-    environment:
-      NODE_ENV: development
+    env_file:
+      - ./auth-api/.env
     depends_on:
       postgres:
         condition: service_healthy
@@ -14,7 +14,7 @@ services:
   postgres:
     image: postgres:16
     container_name: auth_postgres_db
-    restart: unless-stopped
+    restart: always
     env_file:
       - .env
     healthcheck:
