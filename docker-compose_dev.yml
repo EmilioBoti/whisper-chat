@@ -1,14 +1,13 @@
 services:
   auth-api:
-    image: node:24.12.0
     build: ./auth-api
     ports:
       - 3001:3001
     env_file:
       - ./auth-api/.env
     volumes:
-      - ./auth-api:/app
-      - /app/node_modules
+        - ./auth-api:/usr/src/app
+        - node_modules_auth:/usr/src/app/node_modules
     command: ["npm", "run", "dev"]
     depends_on:
       postgres:
@@ -34,6 +33,7 @@ services:
       - backend
 volumes:
   postgres_data:
+  node_modules_auth:
 
 networks:
   backend:
