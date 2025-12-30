@@ -14,10 +14,18 @@ datasource db {
 
 
 model User {
-  id  String @id @default(uuid())
-  email String @unique
-  name String
-  password String
-  isPublic Boolean
-  createAt DateTime @default(now())
+  id           String @id @default(uuid())
+  email        String @unique
+  name         String
+  password     String
+  isPublic     Boolean
+  createAt     DateTime @default(now())
+  refreshToken RefreshToken[]
+}
+
+model RefreshToken {
+  id             Int @id @default(autoincrement())
+  refreshToken   String
+  user           User @relation(fields: [userId], references: [id])
+  userId         String
 }

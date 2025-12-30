@@ -1,0 +1,1 @@
+export const USER_REGISTERED_CODE_P2002: string = "P2002"

@@ -1,0 +1,24 @@
+import type { Request, Response, NextFunction } from "express"
+import { AppError } from "../models/AppError.ts"
+
+export const errorMiddleware = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+
+  if(err instanceof AppError) {
+    return res.status(err.status).json({
+      message: err.message
+    })
+  }
+
+  // Unknown errors
+  console.error(err);
+
+  return res.status(500).json({
+    message: "Internal server error"
+  })
+
+}
