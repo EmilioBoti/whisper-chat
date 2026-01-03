@@ -15,7 +15,7 @@ export const errorMiddleware = (
   }
 
   // Unknown errors
-  console.error(err);
+  if (process.env.NODE_ENV !== "production") console.error(err);
 
   return res.status(500).json({
     message: "Internal server error"

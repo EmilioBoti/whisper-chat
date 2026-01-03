@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt"
-import { signJwtToken } from "../../lib/jwt.ts"
+import { signJwtToken, verifyJwtToken } from "../../lib/jwt.ts"
 import InternalErrorHandler from "../../lib/errors/InternalErrorHandler.ts"
 import { BadRequestError } from "../../lib/errors/BadRequestError.ts"
 import { UnAuthorized } from "../../lib/errors/Unauthorized.ts"
 import { AuthRepository } from "./auth.repository.ts"
 import { isValidEmailFormat } from "../../lib/utils/validation.ts"
-import { LoginResponse } from "../../models/dto/LoginResponse.dto.ts"
+import { LoginResponse, LogoutResponse } from "../../models/dto/auth.dto.ts"
 import { NewUserModel } from "../../models/dto/user.dtoSchema.ts"
 
 
@@ -26,6 +26,11 @@ export class AuthService {
 
       const accessToken = signJwtToken(result.id, result.email, this.accessTokenExpiresIn)
       const refreshToken = signJwtToken(result.id, result.email, this.refreshTokenExpiresIn)
+
+      /**
+       * Store refresh token in DB
+       */
+      await AuthRepository.storeRefreshToken(result.id, refreshToken)
 
       const userResponse: LoginResponse = {
         tokens: {
@@ -74,6 +79,26 @@ export class AuthService {
         }
       }
       return userResponse
+    } catch (error) {
+      throw InternalErrorHandler.handler(error)
+    }
+  }
+
+  static async logoutUser(refreshToken: string): Promise<LogoutResponse> {
+    try {
+      const decodedToken = verifyJwtToken(refreshToken).payload
+      const userId = (decodedToken as any).userId
+      const result = await AuthRepository.deleteRefreshToken(userId, refreshToken)
+      
+      if(result.count <= 0) {
+        throw new BadRequestError("Failed to logout user, no refresh token found.")
+      }
+
+      const logoutResponse: LogoutResponse = {
+        isSuccess: true,
+        message: "Logout successful."
+      }
+      return logoutResponse
     } catch (error) {
       throw InternalErrorHandler.handler(error)
     }
