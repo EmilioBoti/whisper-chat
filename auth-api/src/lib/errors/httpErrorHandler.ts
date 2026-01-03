@@ -1,10 +1,10 @@
-import { NewUserDto } from "../../models/NewUserDto.ts"
-import { AppError } from "../../models/AppError.ts"
 import { BadRequestError } from "./BadRequestError.ts"
 import { isValidEmailFormat, isValidPwdFormat, isValidUsername } from "../utils/validation.ts"
+import { AppError } from "../../models/AppError.ts"
+import { NewUserModel } from "../../models/dto/user.dtoSchema.ts"
 
 
-export const singUpErrorHandler = (newUser: NewUserDto): AppError | undefined => {
+export const singUpErrorHandler = (newUser: NewUserModel): AppError | undefined => {
   if(!newUser.name || !newUser.email || !newUser.password) {
     return new BadRequestError("Bad request.")
   }

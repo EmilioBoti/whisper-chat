@@ -1,4 +1,4 @@
-import { NewUserDto } from "../../models/NewUserDto.ts"
+import { NewUserModel } from "../../models/dto/user.dtoSchema.ts"
 import { prisma } from "../../lib/config/prisma.ts"
 import { User } from "@prisma/client"
 
@@ -13,7 +13,7 @@ export class AuthRepository {
     }) as User
   }
 
-  static async createNewUser(newUser: NewUserDto): Promise<User> {
+  static async createNewUser(newUser: NewUserModel): Promise<User> {
     return await prisma.user.create({
       data: {
         name: String(newUser.name),

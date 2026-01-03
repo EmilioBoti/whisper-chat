@@ -1,13 +1,13 @@
 import type { Request, Response } from "express"
 import { AuthService } from "./auth.service.ts"
-import { NewUserDto } from "../../models/NewUserDto.ts"
+import { NewUserModel } from "../../models/dto/user.dtoSchema.ts"
 import { asyncHandler } from "../../lib/utils/asyncHandler.ts"
 import { singUpErrorHandler } from "../../lib/errors/httpErrorHandler.ts"
 
 
 
 export async function signInUser(req: Request, res: Response) {
-  const newUser: NewUserDto = req.body
+  const newUser: NewUserModel = req.body
 
   const error = singUpErrorHandler(newUser)
   
@@ -19,7 +19,7 @@ export async function signInUser(req: Request, res: Response) {
 }
 
 export const signUpUser = asyncHandler( async (req: Request, res: Response) => {
-  const newUser: NewUserDto = req.body
+  const newUser: NewUserModel = req.body
   const error = singUpErrorHandler(newUser)
 
   if(error) throw error

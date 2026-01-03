@@ -1,9 +1,9 @@
-import { UserDto } from "./UserDto.ts"
+import { UserModel } from "./User.dto.ts"
 
 export interface LoginResponse {
  tokens: {
    accessToken: string,
    refreshToken: string
  },
-  user: UserDto
+  user: UserModel
 }
