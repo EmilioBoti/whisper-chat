@@ -33,10 +33,22 @@ export const logoutUser = asyncHandler( async (req: Request, res: Response) => {
   const { refreshToken } = req.body
 
   if(!refreshToken) {
-    throw new BadRequestError("Refresh token is required.")
+    throw new BadRequestError("Refresh and AccessToken are required.")
   }
 
   const result = await AuthService.logoutUser(refreshToken)
+  return res.status(200).json(result)
+
+})
+
+export const refreshToken = asyncHandler( async (req: Request, res: Response) => {
+  const { refreshToken } = req.body
+
+  if(!refreshToken) {
+    throw new BadRequestError("Refresh and AccessToken are required.")
+  }
+
+  const result = await AuthService.refreshToken(refreshToken)
   return res.status(200).json(result)
 
 })

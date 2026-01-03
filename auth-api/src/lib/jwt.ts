@@ -1,5 +1,7 @@
-import jwt, { Jwt } from "jsonwebtoken"
+import jwt from "jsonwebtoken"
 import { BadRequestError } from "./errors/BadRequestError.ts"
+import { AuthJwtPayload } from "../models/dto/auth.dto.ts"
+import { UnAuthorized } from "./errors/Unauthorized.ts"
 
 const secret_key: string = process.env.JWT_SECRET ?? ''
 
@@ -7,11 +9,17 @@ export const signJwtToken = (userId: string, email: string, expiresIn: string): 
   return jwt.sign({ userId: userId, email: email }, secret_key, { expiresIn: expiresIn })
 }
 
-export const verifyJwtToken = (token: string): Jwt => {
+/**
+ * 
+ * @param token 
+ * @returns AuthJwtPayload
+ * @throws BadRequestError if token is invalid of has expired
+ */
+export const verifyJwtToken = (token: string): AuthJwtPayload => {
   try {
-    return jwt.verify(token, secret_key, { complete: true })
+    return jwt.verify(token, secret_key, { complete: true }).payload as AuthJwtPayload
   } catch (error) {
-    throw new BadRequestError("Invalid token.")
+    throw new UnAuthorized("Invalid or expired token.")
   }
   
 }

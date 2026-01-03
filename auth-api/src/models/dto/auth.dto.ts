@@ -1,10 +1,7 @@
 import { UserModel } from "./user.dtoSchema.ts"
 
 export interface LoginResponse {
- tokens: {
-   accessToken: string,
-   refreshToken: string
- },
+  tokens: AuthToken,
   user: UserModel
 }
 
@@ -15,12 +12,15 @@ export interface TokenAuth {
 
 export interface AuthJwtPayload {
   userId: string,
-  email: string,
-  iat: number,
-  exp: number
+  email: string
 }
 
 export interface LogoutResponse {
   isSuccess: boolean,
   message: string
+}
+
+export interface AuthToken {
+  accessToken: string,
+  refreshToken: string
 }

@@ -5,7 +5,7 @@ import { BadRequestError } from "../../lib/errors/BadRequestError.ts"
 import { UnAuthorized } from "../../lib/errors/Unauthorized.ts"
 import { AuthRepository } from "./auth.repository.ts"
 import { isValidEmailFormat } from "../../lib/utils/validation.ts"
-import { LoginResponse, LogoutResponse } from "../../models/dto/auth.dto.ts"
+import { AuthToken, LoginResponse, LogoutResponse } from "../../models/dto/auth.dto.ts"
 import { NewUserModel } from "../../models/dto/user.dtoSchema.ts"
 
 
@@ -86,8 +86,7 @@ export class AuthService {
 
   static async logoutUser(refreshToken: string): Promise<LogoutResponse> {
     try {
-      const decodedToken = verifyJwtToken(refreshToken).payload
-      const userId = (decodedToken as any).userId
+      const { userId } = verifyJwtToken(refreshToken)
       const result = await AuthRepository.deleteRefreshToken(userId, refreshToken)
       
       if(result.count <= 0) {
@@ -99,6 +98,31 @@ export class AuthService {
         message: "Logout successful."
       }
       return logoutResponse
+    } catch (error) {
+      throw InternalErrorHandler.handler(error)
+    }
+  }
+
+  static async refreshToken(oldRefreshToken: string): Promise<AuthToken> {
+    try {
+      const { userId, email } = verifyJwtToken(oldRefreshToken)
+      const newAccessToken = signJwtToken(userId, email, this.accessTokenExpiresIn)
+      const newRefreshToken = signJwtToken(userId, email, this.refreshTokenExpiresIn)
+      
+      /**
+       * Update refresh token in DB
+       */
+      const tokenUpdated =  await AuthRepository.updateRefreshToken(userId, oldRefreshToken, newRefreshToken)
+
+      if(tokenUpdated.count <= 0) {
+        throw new BadRequestError("Failed to refresh token, no refresh token found.")
+      }
+
+      const token: AuthToken = {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken
+      }
+      return token
     } catch (error) {
       throw InternalErrorHandler.handler(error)
     }

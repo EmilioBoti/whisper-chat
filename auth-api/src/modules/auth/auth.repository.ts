@@ -42,4 +42,16 @@ export class AuthRepository {
     })
   }
   
+  static async updateRefreshToken(userId: string, oldRefreshToken: string, newRefreshToken: string): Promise<any> {
+    return await prisma.refreshToken.updateMany({
+      where: {
+        userId: String(userId),
+        refreshToken: String(oldRefreshToken)
+      },
+      data: {
+        refreshToken: String(newRefreshToken)
+      }
+    })
+  }
+  
 }
