@@ -6,9 +6,9 @@
   "main": "app.js",
   "scripts": {
     "start": "node dist/app.ts",
+    "build": "npm run build",
     "dev": "nodemon --watch src --exec tsx src/app.ts",
-    "db:deploy": "npx prisma migrate deploy && npx prisma generate",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db:deploy": "npx prisma migrate deploy && npx prisma generate"
   },
   "author": "Emilio Botier",
   "license": "MIT",
