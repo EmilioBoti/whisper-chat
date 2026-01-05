@@ -19,7 +19,14 @@ COPY package*.json ./
 
 RUN npm ci
 
+# Copy Prisma schema BEFORE build
+COPY prisma ./prisma
+
+# Generate Prisma Client
+RUN npx prisma generate
+
 COPY tsconfig.json ./
+COPY tsconfig.build.json ./
 COPY src ./src
 
 RUN npm run build
@@ -31,15 +38,16 @@ FROM node:${NODE_VERSION} AS production
 
 WORKDIR /usr/src/app
 
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
+COPY package*.json ./
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/prisma ./prisma
 
 RUN npm ci --only=production
 
-# Generate Prisma Client
-RUN npx prisma generate
+ENV NODE_ENV=production
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:prod"]
 
   
 # =====================

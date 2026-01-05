@@ -1,8 +1,13 @@
 services:
   auth-api:
-    build: ./auth-api
+    build:
+      context: ./auth-api
+      dockerfile: Dockerfile
+      target: production
     ports:
       - 3001:3001
+    environment:
+      - NODE_ENV=production
     env_file:
       - ./auth-api/.env
     volumes:

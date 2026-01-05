@@ -5,8 +5,9 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "node dist/app.ts",
-    "build": "npm run build",
+    "start:prod": "npm run db:deploy && npm run start",
+    "start": "node dist/app.js",
+    "build": "tsc -p tsconfig.build.json",
     "dev": "nodemon --watch src --exec tsx src/app.ts",
     "db:deploy": "npx prisma migrate deploy && npx prisma generate"
   },
