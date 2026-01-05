@@ -1,4 +1,4 @@
-import { UserModel } from "./user.dtoSchema.ts"
+import { UserModel } from "./user.dtoSchema.js"
 
 export interface LoginResponse {
   tokens: AuthToken,

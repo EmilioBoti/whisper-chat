@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken"
-import { BadRequestError } from "./errors/BadRequestError.ts"
-import { AuthJwtPayload } from "../models/dto/auth.dto.ts"
-import { UnAuthorized } from "./errors/Unauthorized.ts"
+import { AuthJwtPayload } from "../models/dto/auth.dto.js"
+import { UnAuthorized } from "./errors/Unauthorized.js"
 
 const secret_key: string = process.env.JWT_SECRET ?? ''
 

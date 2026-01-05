@@ -1,7 +1,7 @@
-import { AppError } from "../../models/AppError.ts"
+import { AppError } from "../../models/AppError.js"
 import { Prisma } from "@prisma/client"
-import { BadRequestError } from "./BadRequestError.ts"
-import { USER_REGISTERED_CODE_P2002 } from "../utils/constants.ts"
+import { BadRequestError } from "./BadRequestError.js"
+import { USER_REGISTERED_CODE_P2002 } from "../utils/constants.js"
 
 export default class InternalErrorHandler {
 

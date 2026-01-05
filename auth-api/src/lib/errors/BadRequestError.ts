@@ -1,4 +1,4 @@
-import { AppError } from "../../models/AppError.ts";
+import { AppError } from "../../models/AppError.js";
 
 export class BadRequestError extends AppError {
   constructor(message = "Bad request", status = 400) {

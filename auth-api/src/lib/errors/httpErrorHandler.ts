@@ -1,7 +1,7 @@
-import { BadRequestError } from "./BadRequestError.ts"
-import { isValidEmailFormat, isValidPwdFormat, isValidUsername } from "../utils/validation.ts"
-import { AppError } from "../../models/AppError.ts"
-import { NewUserModel } from "../../models/dto/user.dtoSchema.ts"
+import { BadRequestError } from "./BadRequestError.js"
+import { isValidEmailFormat, isValidPwdFormat, isValidUsername } from "../utils/validation.js"
+import { AppError } from "../../models/AppError.js"
+import { NewUserModel } from "../../models/dto/user.dtoSchema.js"
 
 
 export const singUpErrorHandler = (newUser: NewUserModel): AppError | undefined => {

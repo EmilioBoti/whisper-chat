@@ -1,8 +1,8 @@
 import express from 'express'
 import type { Request, Response } from 'express'
 import dotenv from 'dotenv'
-import authRoutes from './routes/auth.route.ts'
-import { errorMiddleware } from './middleware/error.middleware.ts'
+import authRoutes from './routes/auth.route.js'
+import { errorMiddleware } from './middleware/error.middleware.js'
 
 const app = express()
 

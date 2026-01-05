@@ -1,9 +1,9 @@
 import type { Request, Response } from "express"
-import { AuthService } from "./auth.service.ts"
-import { NewUserModel } from "../../models/dto/user.dtoSchema.ts"
-import { asyncHandler } from "../../lib/utils/asyncHandler.ts"
-import { singUpErrorHandler } from "../../lib/errors/httpErrorHandler.ts"
-import { BadRequestError } from "../../lib/errors/BadRequestError.ts"
+import { AuthService } from "./auth.service.js"
+import { NewUserModel } from "../../models/dto/user.dtoSchema.js"
+import { asyncHandler } from "../../lib/utils/asyncHandler.js"
+import { singUpErrorHandler } from "../../lib/errors/httpErrorHandler.js"
+import { BadRequestError } from "../../lib/errors/BadRequestError.js"
 
 
 export async function signInUser(req: Request, res: Response) {

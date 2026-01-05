@@ -1,12 +1,12 @@
 import bcrypt from "bcrypt"
-import { signJwtToken, verifyJwtToken } from "../../lib/jwt.ts"
-import InternalErrorHandler from "../../lib/errors/InternalErrorHandler.ts"
-import { BadRequestError } from "../../lib/errors/BadRequestError.ts"
-import { UnAuthorized } from "../../lib/errors/Unauthorized.ts"
-import { AuthRepository } from "./auth.repository.ts"
-import { isValidEmailFormat } from "../../lib/utils/validation.ts"
-import { AuthToken, LoginResponse, LogoutResponse } from "../../models/dto/auth.dto.ts"
-import { NewUserModel } from "../../models/dto/user.dtoSchema.ts"
+import { signJwtToken, verifyJwtToken } from "../../lib/jwt.js"
+import InternalErrorHandler from "../../lib/errors/InternalErrorHandler.js"
+import { BadRequestError } from "../../lib/errors/BadRequestError.js"
+import { UnAuthorized } from "../../lib/errors/Unauthorized.js"
+import { AuthRepository } from "./auth.repository.js"
+import { isValidEmailFormat } from "../../lib/utils/validation.js"
+import { AuthToken, LoginResponse, LogoutResponse } from "../../models/dto/auth.dto.js"
+import { NewUserModel } from "../../models/dto/user.dtoSchema.js"
 
 
 export class AuthService {
@@ -42,7 +42,7 @@ export class AuthService {
           name: result.name,
           email: result.email,
           isPublic: result.isPublic,
-          createAt: result.createAt
+          createAt: result.createAt.toISOString()
         }
       }
       return userResponse
@@ -75,7 +75,7 @@ export class AuthService {
           name: result.name,
           email: result.email,
           isPublic: result.isPublic,
-          createAt: result.createAt
+          createAt: result.createAt.toISOString()
         }
       }
       return userResponse

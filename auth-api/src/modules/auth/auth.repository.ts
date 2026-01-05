@@ -1,5 +1,5 @@
-import { NewUserModel } from "../../models/dto/user.dtoSchema.ts"
-import { prisma } from "../../lib/config/prisma.ts"
+import { NewUserModel } from "../../models/dto/user.dtoSchema.js"
+import { prisma } from "../../lib/config/prisma.js"
 import { User } from "@prisma/client"
 
 

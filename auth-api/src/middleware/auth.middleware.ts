@@ -1,7 +1,7 @@
 
 import type { Request, Response, NextFunction } from "express"
-import { UnAuthorized } from "../lib/errors/Unauthorized.ts"
-import { verifyJwtToken } from "../lib/jwt.ts"
+import { UnAuthorized } from "../lib/errors/Unauthorized.js"
+import { verifyJwtToken } from "../lib/jwt.js"
 
 
 const authMiddleware = (
