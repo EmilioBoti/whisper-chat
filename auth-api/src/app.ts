@@ -6,7 +6,11 @@ import { errorMiddleware } from './middleware/error.middleware.js'
 
 const app = express()
 
-dotenv.config({path: './.env.development'})
+const envFile = process.env.NODE_ENV === 'production' 
+  ? '.env.production' 
+  : '.env.development'
+
+dotenv.config({path: envFile })
 
 //Middleware
 app.use(express.json())

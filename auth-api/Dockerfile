@@ -7,6 +7,7 @@
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
 ARG NODE_VERSION=24.12.0
+ARG DATABASE_URL=""
 
 # =====================
 # BUILD STAGE
@@ -19,10 +20,14 @@ COPY package*.json ./
 
 RUN npm ci
 
-# Copy Prisma schema BEFORE build
+# Copy Prisma config and schema so we can generate the client during build
+COPY prisma.config.ts ./
 COPY prisma ./prisma
 
-# Generate Prisma Client
+# Expose DATABASE_URL at build time (pass with --build-arg DATABASE_URL)
+ENV DATABASE_URL=${DATABASE_URL}
+
+# Generate Prisma Client so TypeScript can see generated types during `tsc` build
 RUN npx prisma generate
 
 COPY tsconfig.json ./
@@ -39,13 +44,11 @@ FROM node:${NODE_VERSION} AS production
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY prisma.config.ts ./
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/prisma ./prisma
 
 RUN npm ci --only=production
-
-ENV NODE_ENV=production
 
 CMD ["npm", "run", "start:prod"]
 
@@ -61,9 +64,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY prisma ./prisma
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage a bind mounts to package.json and package-lock.json to avoid having to copy them into
 # into this layer.
 RUN npm install
 
@@ -74,4 +74,4 @@ COPY . .
 EXPOSE 3001
 
 # Run the application.
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start:dev"]
