@@ -12,7 +12,8 @@ services:
     env_file:
       - .env.production
     ports:
-      - "3001:3001"
+      - "80:3001"
+      - "43:3001"
     networks:
       - backend_network
   postgres-prod:
@@ -31,6 +32,17 @@ services:
       - postgres_data_prod:/var/lib/postgresql/data
     networks:
       - backend_network
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./ngnix/conf.d:/etc/ngnix/config.d
+      - ./certs:/etc/ngnix/certs
+    depends_on:
+      - auth-api-prod
+
 volumes:
   postgres_data_prod:
 
