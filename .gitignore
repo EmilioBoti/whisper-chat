@@ -2,3 +2,6 @@
 .env
 .env.*
 !.env.example
+ngnix/certs/*.key
+ngnix/certs/*.pem
+ngnix/certs/*.crt

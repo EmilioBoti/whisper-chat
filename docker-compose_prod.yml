@@ -11,9 +11,6 @@ services:
       - NODE_ENV=production
     env_file:
       - .env.production
-    ports:
-      - "80:3001"
-      - "43:3001"
     networks:
       - backend_network
   postgres-prod:
@@ -38,10 +35,12 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./ngnix/conf.d:/etc/ngnix/config.d
-      - ./certs:/etc/ngnix/certs
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
       - auth-api-prod
+    networks:
+      - backend_network
 
 volumes:
   postgres_data_prod:
