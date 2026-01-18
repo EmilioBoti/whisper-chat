@@ -13,6 +13,17 @@ services:
       - "3001:3001"
     networks:
       - backend_network
+  chat-ws:
+    build:
+      context: ./chat-ws
+      dockerfile: Dockerfile
+      target: development
+    env_file:
+      - .env.development
+    ports:
+      - "3002:3002"
+    networks:
+      - backend_network
   postgres-dev:
     image: postgres:16
     restart: always
