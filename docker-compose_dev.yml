@@ -21,6 +21,9 @@ services:
       context: ./chat-ws
       dockerfile: Dockerfile
       target: development
+    depends_on:
+      postgres-chat:
+        condition: service_healthy
     env_file:
       - .env.development
     ports:
@@ -38,7 +41,7 @@ services:
     ports:
       - "5431:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U emilio_botier_dev -d auth_db_dev"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -65,7 +68,6 @@ services:
       interval: 1m30s
       timeout: 30s
       retries: 5
-      start_period: 30s
     volumes:
       - postgres_chat_dev:/var/lib/postgresql/data
     networks:

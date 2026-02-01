@@ -24,14 +24,29 @@ COPY prisma.config.ts ./
 COPY prisma ./prisma
 
 # Expose DATABASE_URL at build time (pass with --build-arg DATABASE_URL)
-ENV DATABASE_URL=${DATABASE_URL}
+ENV DATABASE_URL=${DATABASE_URL_CHAT}
 
 COPY tsconfig.json ./
 COPY tsconfig.build.json ./
 COPY src ./src
 
-CMD npm run build
+RUN npm run build
 
+# =====================
+# PRODUCTION STAGE
+# =====================
+FROM node:${NODE_VERSION} AS production
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+COPY prisma.config.ts ./
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/prisma ./prisma
+
+RUN npm ci --only=production
+
+CMD ["npm", "run", "start:prod"]
 
 # =====================
 # DEVELOPMENT STAGE
@@ -47,4 +62,4 @@ RUN npm install
 # Copy the rest of the source files into the image.
 COPY . .
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start:dev"]
