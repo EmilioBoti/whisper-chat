@@ -13,11 +13,18 @@ ARG DATABASE_URL=""
 # =====================
 FROM node:${NODE_VERSION} as Builder
 
-WORKDIR /usr/src/app/chat-ws
+WORKDIR /usr/src/app
 
 COPY ./package*.json ./
 
 RUN npm ci
+
+# Copy Prisma config and schema so we can generate the client during build
+COPY prisma.config.ts ./
+COPY prisma ./prisma
+
+# Expose DATABASE_URL at build time (pass with --build-arg DATABASE_URL)
+ENV DATABASE_URL=${DATABASE_URL}
 
 COPY tsconfig.json ./
 COPY tsconfig.build.json ./
@@ -31,7 +38,7 @@ CMD npm run build
 # =====================
 FROM node:${NODE_VERSION} as development
 
-WORKDIR /usr/src/app/chat-ws
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 

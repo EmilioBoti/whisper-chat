@@ -1,16 +1,19 @@
 services:
-  auth-api-dev:
+  auth-api:
     build: 
       context: ./auth-api
       dockerfile: Dockerfile
       target: development
     depends_on:
-      postgres-dev:
+      postgres-auth:
         condition: service_healthy
     env_file:
       - .env.development
     ports:
       - "3001:3001"
+    volumes:
+      - ./auth-api:/usr/src/app  
+      - /usr/src/app/node_modules
     networks:
       - backend_network
   chat-ws:
@@ -22,25 +25,28 @@ services:
       - .env.development
     ports:
       - "3002:3002"
+    volumes:
+      - ./chat-ws:/usr/src/app
+      - /usr/src/app/node_modules
     networks:
       - backend_network
-  postgres-dev:
+  postgres-auth:
     image: postgres:16
     restart: always
     env_file:
       - .env.development
     ports:
-      - "5432:5432"
+      - "5431:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U emilio_botier_dev -d auth_db_dev"]
       interval: 5s
       timeout: 5s
       retries: 5
     volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
+      - postgres_auth_dev:/var/lib/postgresql/data
     networks:
       - backend_network
-  postgres-chat-dev:
+  postgres-chat:
     image: postgres:16
     restart: always
     env_file:
@@ -53,7 +59,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - DB_PORT=${DB_PORT_CHAT}
     ports: 
-      - "5435:5432"
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB_CHAT}"]
       interval: 1m30s
@@ -65,7 +71,7 @@ services:
     networks:
       - backend_network
 volumes:
-  postgres_data_dev:
+  postgres_auth_dev:
   postgres_chat_dev:
 
 networks:
