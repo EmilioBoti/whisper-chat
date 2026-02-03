@@ -2,15 +2,13 @@
   "name": "chat-ws",
   "version": "1.0.0",
   "description": "",
-  "main": "app.ts",
-  "directories": {
-    "lib": "lib"
-  },
+  "type": "module",
+  "main": "app.js",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "start:prod": "npm run db:deploy && npm run start",
     "start:dev": "npm run db:dev && npm run dev",
-    "start": "NODE_ENV=production node dist/app.js",
+    "start": "node dist/app.js",
     "dev": "nodemon --watch src --exec tsx src/app.ts",
     "db:dev": "npx prisma migrate dev",
     "db:deploy": "npx prisma migrate deploy && npx prisma generate"

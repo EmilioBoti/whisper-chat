@@ -22,7 +22,7 @@ dotenv.config({ path: envFile })
 app.set('trust proxy', true) // trust first proxy
 app.use(express.json())
 
-app.get('/api/health', (req: Request, res: Response) => { res.send('Chat WebSocket Server is running!!!') })
+app.get('/ws/health', (req: Request, res: Response) => { res.send('Chat WebSocket Server is running!!!') })
 
 io.on("connection", (socket) => {
   console.log('a user connected:', socket.id)

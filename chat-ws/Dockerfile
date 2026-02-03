@@ -11,11 +11,11 @@ ARG DATABASE_URL=""
 # =====================
 # BUILD STAGE
 # =====================
-FROM node:${NODE_VERSION} as Builder
+FROM node:${NODE_VERSION} as builder
 
 WORKDIR /usr/src/app
 
-COPY ./package*.json ./
+COPY package*.json ./
 
 RUN npm ci
 

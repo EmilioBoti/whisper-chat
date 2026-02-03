@@ -27,9 +27,6 @@ services:
       - .env.production
     ports:
       - "3002:3002"
-    volumes:
-      - ./chat-ws:/usr/src/app
-      - /usr/src/app/node_modules
     networks:
       - backend_network
   postgres-auth:
