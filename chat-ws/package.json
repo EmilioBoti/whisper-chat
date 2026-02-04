@@ -1,0 +1,36 @@
+{
+  "name": "chat-ws",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start:prod": "npm run db:deploy && npm run start",
+    "start:dev": "npm run db:dev && npm run dev",
+    "start": "node dist/app.js",
+    "dev": "nodemon --watch src --exec tsx src/app.ts",
+    "db:dev": "npx prisma migrate dev",
+    "db:deploy": "npx prisma migrate deploy && npx prisma generate"
+  },
+  "author": "Emilio Botier",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.9",
+    "@types/pg": "^8.16.0",
+    "@types/socket.io": "^3.0.1",
+    "nodemon": "^3.1.11",
+    "prisma": "^7.3.0",
+    "ts-node": "^1.7.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

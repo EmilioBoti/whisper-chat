@@ -1,0 +1,54 @@
+# =====================
+# Dependencies
+# =====================
+node_modules/
+
+# =====================
+# Build output
+# =====================
+dist/
+build/
+
+# =====================
+# TypeScript
+# =====================
+*.tsbuildinfo
+
+# =====================
+# Environment variables
+# =====================
+.env
+.env.*
+!.env.example
+
+# =====================
+# Logs
+# =====================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# =====================
+# OS / Editor files
+# =====================
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+!.vscode/extensions.json
+.idea/
+
+# =====================
+# Test / Coverage
+# =====================
+coverage/
+
+# =====================
+# Misc
+# =====================
+.cache/
+/generated/prisma

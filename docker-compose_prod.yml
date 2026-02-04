@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       target: production
     depends_on:
-      postgres-prod:
+      postgres-auth:
         condition: service_healthy
     environment:
       - NODE_ENV=production
@@ -13,20 +13,59 @@ services:
       - .env.production
     networks:
       - backend_network
-  postgres-prod:
+  chat-ws-prod:
+    build:
+      context: ./chat-ws
+      dockerfile: Dockerfile
+      target: production
+    depends_on:
+      postgres-chat:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.production
+    ports:
+      - "3002:3002"
+    networks:
+      - backend_network
+  postgres-auth:
     image: postgres:16
     restart: always
     env_file:
       - .env.production
     ports:
-      - "5432:5432"
+      - "5431:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U emilio_botier -d auth_db_prod"]
-      interval: 5s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 1m30s
+      timeout: 30s
       retries: 5
     volumes:
-      - postgres_data_prod:/var/lib/postgresql/data
+      - postgres_auth_prod:/var/lib/postgresql/data
+    networks:
+      - backend_network
+  postgres-chat:
+    image: postgres:16
+    restart: always
+    env_file:
+      - .env.production
+    environment:
+      - DATABASE_URL=${DATABASE_URL_CHAT}
+      - DB_HOST=${DB_HOST}
+      - POSTGRES_DB=${POSTGRES_DB_CHAT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_PORT=${DB_PORT_CHAT}
+    ports: 
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB_CHAT}"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+    volumes:
+      - postgres_chat_prod:/var/lib/postgresql/data
     networks:
       - backend_network
   nginx:
@@ -39,11 +78,13 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
       - auth-api-prod
+      - chat-ws-prod
     networks:
       - backend_network
 
 volumes:
-  postgres_data_prod:
+  postgres_auth_prod:
+  postgres_chat_prod:
 
 networks:
   backend_network:
