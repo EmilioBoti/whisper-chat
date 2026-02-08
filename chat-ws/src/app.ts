@@ -1,16 +1,8 @@
 import express, { Request, Response } from 'express'
 import { createServer } from 'http'
 import dotenv from 'dotenv'
-import { Server } from 'socket.io'
-
-const app = express()
-const server = createServer(app)
-
-const io = new Server(server, {
-  cors: {
-    origin: "*", //remove "*" for production
-  }
-})
+import { SocketServer } from './socket/SocketServer.ts'
+import { registeSocketEvent } from './socket/events/register.event.ts'
 
 const port = Number(process.env.CHAT_WS_SERVER_PORT) || 3002
 const envFile = process.env.NODE_ENV === 'production' 
@@ -19,24 +11,26 @@ const envFile = process.env.NODE_ENV === 'production'
 
 dotenv.config({ path: envFile })
 
-app.set('trust proxy', true) // trust first proxy
+const app = express()
+const server = createServer(app)
+
+const io = SocketServer.initSocket(server)
+
+// trust first proxy
+app.set('trust proxy', true)
+
+//Middlewares
 app.use(express.json())
 
+//API Endpoints
 app.get('/ws/health', (req: Request, res: Response) => { res.send('Chat WebSocket Server is running!!!') })
 
-io.on("connection", (socket) => {
-  console.log('a user connected:', socket.id)
+/**
+ * Register user connection and events
+ * @argument Server
+ */
+registeSocketEvent(io)
 
-  socket.on("chat-message", (msg) => {
-    console.log('message received:', msg)
-    // io.emit("chat message", msg) // broadcast the message to all connected clients
-  })
-
-})
-
-io.on("disconnect", (socket) => {
-  console.log('user disconnected:', socket.id)
-})
 
 server.listen(port, "0.0.0.0", () => {
   console.log(`Chat WebSocket Server is running on port: ${port}`)
