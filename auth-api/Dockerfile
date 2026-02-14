@@ -24,6 +24,9 @@ RUN npm ci
 COPY prisma.config.ts ./
 COPY prisma ./prisma
 
+# Generate Prisma Client BEFORE building
+RUN npx prisma generate
+
 # Expose DATABASE_URL at build time (pass with --build-arg DATABASE_URL)
 ENV DATABASE_URL=${DATABASE_URL}
 
