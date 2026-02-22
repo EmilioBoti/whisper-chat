@@ -66,6 +66,23 @@ services:
       - postgres_chat_prod:/var/lib/postgresql/data
     networks:
       - backend_network
+  redis-cache:
+    image: redis:latest
+    restart: always
+    env_file:
+      - .env.development
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 3
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend_network
   nginx:
     image: nginx:alpine
     ports:
