@@ -1,4 +1,4 @@
-import { ChatType } from '@prisma/client'
+import { ChatType, Message } from '@prisma/client'
 import { prisma } from '../../lib/config/prisma.js'
 import { ChatWithMembers } from 'src/models/db.model/chat.model.js'
 
@@ -30,6 +30,16 @@ export default class ChatRepository {
       update: {}
     })
     return chat
+  }
+
+  static async storeMessage(chatId: string, senderId: string, content: string): Promise<Message> {
+    return await prisma.message.create({
+      data: {
+        chatId: chatId,
+        senderId: senderId,
+        content: content
+      }
+    })
   }
 
 }
