@@ -4,3 +4,17 @@ export interface Chat {
   createdBy: string,
   createdAt: string
 }
+
+export interface UserChat {
+  id: string,
+  userId: string,
+  role: string,
+  joinedAt: string,
+  menbers: any[]
+}
+
+
+
+// export interface Member {
+  
+// }

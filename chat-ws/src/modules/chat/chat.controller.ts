@@ -16,4 +16,11 @@ export class ChatController {
     return res.status(201).json({ ...chat })
   }
 
+  static async getUserChats(req: Request, res: Response) {
+    const userId = req.user.userId
+    
+    const chats = await ChatService.fetchUserChats(userId)
+    return res.status(200).json([ ...chats ])
+  }
+
 }

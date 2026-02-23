@@ -1,6 +1,7 @@
 import ChatRepository from './chat.repository.js'
+// import OnlineRepository from '../redis/online.repository.js'
 import InternalErrorHandler from '../../lib/errors/InternalErrorHandler.js'
-import { Chat } from 'src/models/dto/chat.dto.js'
+import { Chat, UserChat } from 'src/models/dto/chat.dto.js'
 
 export class ChatService {
 
@@ -17,5 +18,14 @@ export class ChatService {
       throw InternalErrorHandler.handler(error)
     }
   }
+
+  static async fetchUserChats(userId: string): Promise<any[]> {
+    try {
+      const chats = await ChatRepository.getUserChats(userId)
+      return chats
+    } catch (error) {
+      throw InternalErrorHandler.handler(error)
+    }
+  } 
 
 }

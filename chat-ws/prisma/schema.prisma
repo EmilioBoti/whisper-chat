@@ -42,6 +42,7 @@ model ChatMember {
   joinedAt     DateTime @default(now())
 
   chat         Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  profile      Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([chatId, userId])
   @@index([userId])
@@ -57,4 +58,21 @@ model Message {
   chat         Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
   @@index([chatId, senderId])
+}
+
+model Profile {
+  id          String @id
+  name        String
+  lastname    String?
+  birthDate   DateTime?
+  photo       String?
+  about       String?
+  isPublic    Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members   ChatMember[]
+
+  @@index([id])
+
 }
