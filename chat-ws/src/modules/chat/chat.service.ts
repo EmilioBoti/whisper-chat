@@ -1,28 +1,23 @@
 import ChatRepository from './chat.repository.js'
-// import OnlineRepository from '../redis/online.repository.js'
 import InternalErrorHandler from '../../lib/errors/InternalErrorHandler.js'
-import { Chat, UserChat } from 'src/models/dto/chat.dto.js'
+import { SimpleChat, UserChat } from '../../models/dto/chat.dto.js'
+import ChatMapper from '../../utils/mapers/chat.mapper.js'
 
 export class ChatService {
 
-  static async openDirectChat(userId: string, userBId: string): Promise<Chat> {
+  static async openDirectChat(userId: string, userBId: string): Promise<SimpleChat> {
     try {
       const chat = await ChatRepository.openDirectChat(userId, userBId)
-      return {
-        id: chat.id,
-        type: chat.type,
-        createdBy: chat.createdBy,
-        createdAt: chat.createdAt.toISOString()
-      }
+      return ChatMapper.toSimpleChat(chat)
     } catch (error) {
       throw InternalErrorHandler.handler(error)
     }
   }
 
-  static async fetchUserChats(userId: string): Promise<any[]> {
+  static async fetchUserChats(userId: string): Promise<UserChat[]> {
     try {
       const chats = await ChatRepository.getUserChats(userId)
-      return chats
+      return ChatMapper.toListUserChat(chats)
     } catch (error) {
       throw InternalErrorHandler.handler(error)
     }

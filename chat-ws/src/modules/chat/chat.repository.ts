@@ -1,6 +1,6 @@
 import { ChatType, Message } from '@prisma/client'
 import { prisma } from '../../lib/config/prisma.js'
-import { ChatWithMembers } from '../../models/db.model/chat.model.js'
+import { ChatMemberProfile, ChatWithMembers } from '../../models/db.model/chat.model.js'
 
 export default class ChatRepository {
 
@@ -42,7 +42,7 @@ export default class ChatRepository {
     })
   }
 
-  static async getUserChats(userId: string): Promise<any[]> {
+  static async getUserChats(userId: string): Promise<ChatMemberProfile[]> {
     return prisma.chat.findMany({
       where: {
         members: {

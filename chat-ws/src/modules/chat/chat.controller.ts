@@ -1,6 +1,6 @@
 import type { Request, Response } from "express"
 import { ChatService } from "./chat.service.js"
-import { BadRequestError } from "src/lib/errors/BadRequestError.ts"
+import { BadRequestError } from "../../lib/errors/BadRequestError.js"
 
 export class ChatController {
 

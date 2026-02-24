@@ -7,15 +7,14 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
+  // Unknown errors
+  if (process.env.NODE_ENV !== "production") console.error(err)
 
   if(err instanceof AppError) {
     return res.status(err.status).json({
       message: err.message
     })
   }
-
-  // Unknown errors
-  if (process.env.NODE_ENV !== "production") console.error(err);
 
   return res.status(500).json({
     message: "Internal server error"
