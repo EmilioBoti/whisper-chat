@@ -6,80 +6,51 @@ import { UnAuthorized } from "../../lib/errors/Unauthorized.js"
 import { AuthRepository } from "./auth.repository.js"
 import { isValidEmailFormat } from "../../lib/utils/validation.js"
 import { AuthToken, LoginResponse, LogoutResponse } from "../../models/dto/auth.dto.js"
-import { NewUserModel } from "../../models/dto/user.dtoSchema.js"
-
+import { NewUserCredential } from "../../models/dto/auth.dto.js"
+import { createProfile } from "../../lib/netwotk/client.chat.js"
+import { User } from "@prisma/client"
+import AuthMapper from "../../lib/utils/mapper/auth.mapper.js"
 
 export class AuthService {
 
   public static readonly saltRounds: number = 10
-  public static readonly accessTokenExpiresIn: string = "15m"
+  public static readonly accessTokenExpiresIn: string = "60m"
   public static readonly refreshTokenExpiresIn: string = "30d"
 
 
-  static async loginUser(newUser: NewUserModel): Promise<LoginResponse> {
+  static async loginUser(newUser: NewUserCredential): Promise<LoginResponse> {
     try {
       const result = await AuthRepository.findUserByEmail(newUser.email)
-      const hashPassword = await bcrypt.compare(newUser.password, result?.password ?? "")
+      const hashPassword = await bcrypt.compare(newUser.password, result.user?.password ?? "")
 
       if(!result) throw new UnAuthorized("User does not extist.")
       if(!isValidEmailFormat(newUser.email) || !hashPassword) throw new BadRequestError("Invalid email or password.")
-
-      const accessToken = signJwtToken(result.id, result.email, this.accessTokenExpiresIn)
-      const refreshToken = signJwtToken(result.id, result.email, this.refreshTokenExpiresIn)
-
-      /**
-       * Store refresh token in DB
-       */
-      await AuthRepository.storeRefreshToken(result.id, refreshToken)
-
-      const userResponse: LoginResponse = {
-        tokens: {
-          accessToken,
-          refreshToken,
-        },
-        user: {
-          id: result.id,
-          name: result.name,
-          email: result.email,
-          isPublic: result.isPublic,
-          createAt: result.createAt.toISOString()
-        }
-      }
-      return userResponse
+      return AuthMapper.toAuthResponse(result.tokens, result.user)
     } catch (error) {
       throw InternalErrorHandler.handler(error)
     }
   }
 
-  static async registerNewUser(newUser: NewUserModel): Promise<LoginResponse> {
+  static async registerNewUser(newUser: NewUserCredential): Promise<LoginResponse> {
+    let createdUser: User | undefined = undefined
+
     try {
       const salt = await bcrypt.genSalt(this.saltRounds)
       const hashPassword = await bcrypt.hash(newUser.password, salt)
       const result = await AuthRepository.createNewUser({...newUser, password: hashPassword})
 
-      const accessToken = signJwtToken(result.id, result.email, this.accessTokenExpiresIn)
-      const refreshToken = signJwtToken(result.id, result.email, this.refreshTokenExpiresIn)
+      createdUser = result.user
 
-      /**
-       * Store refresh token in DB
-       */
-      await AuthRepository.storeRefreshToken(result.id, refreshToken)
+      await createProfile(result.user.id, result.user.name)
       
-      const userResponse: LoginResponse = {
-        tokens: {
-          accessToken,
-          refreshToken,
-        },
-        user: {
-          id: result.id,
-          name: result.name,
-          email: result.email,
-          isPublic: result.isPublic,
-          createAt: result.createAt.toISOString()
-        }
-      }
-      return userResponse
+      return AuthMapper.toAuthResponse(result.tokens, result.user)
     } catch (error) {
+      /**
+       * If createProfile fails delete the newUser created
+       */
+      if (createdUser) {
+        await AuthRepository.deleteUser(createdUser.id)
+      }
       throw InternalErrorHandler.handler(error)
     }
   }
@@ -106,23 +77,7 @@ export class AuthService {
   static async refreshToken(oldRefreshToken: string): Promise<AuthToken> {
     try {
       const { userId, email } = verifyJwtToken(oldRefreshToken)
-      const newAccessToken = signJwtToken(userId, email, this.accessTokenExpiresIn)
-      const newRefreshToken = signJwtToken(userId, email, this.refreshTokenExpiresIn)
-      
-      /**
-       * Update refresh token in DB
-       */
-      const tokenUpdated =  await AuthRepository.updateRefreshToken(userId, oldRefreshToken, newRefreshToken)
-
-      if(tokenUpdated.count <= 0) {
-        throw new BadRequestError("Failed to refresh token, no refresh token found.")
-      }
-
-      const token: AuthToken = {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken
-      }
-      return token
+      return await AuthRepository.updateRefreshToken(userId, email, oldRefreshToken)
     } catch (error) {
       throw InternalErrorHandler.handler(error)
     }
