@@ -8,7 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
-    "rootDir": "src",
+    "rootDir": "./",
     "outDir": "dist",
     "baseUrl": "./",
     "paths": {

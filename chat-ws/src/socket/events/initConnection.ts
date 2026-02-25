@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io'
 import OnlineService from '../../modules/redis/online.service.js'
-import SocketEventHandler from '../SocketEventHandler.ts'
+import SocketEventHandler from '../SocketEventHandler.js'
 
 export const initConnection = (io: Server) => {
   /**

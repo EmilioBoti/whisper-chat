@@ -2,10 +2,9 @@
 import type { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import { UnAuthorized } from "../lib/errors/Unauthorized.js"
-import { AuthPayload } from "src/models/schema/authPayload.js"
+import { AuthPayload } from "../models/schema/authPayload.js"
 
 const secret_key: string = process.env.JWT_SECRET ?? ''
-
 
 /**
  * Extend Express Request object to add USER field

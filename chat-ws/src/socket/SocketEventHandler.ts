@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io'
-import { MessageSentDTO } from '../models/dto/messange.dto.ts'
-import OnlineRepository from '../modules/redis/online.repository.ts'
-import ChatRepository from '../modules/chat/chat.repository.ts'
+import { MessageSentDTO } from '../models/dto/messange.dto.js'
+import OnlineRepository from '../modules/redis/online.repository.js'
+import ChatRepository from '../modules/chat/chat.repository.js'
 
 const MESSAGE = 'MESSAGE'
 const MESSAGE_ERROR = 'MESSAGE_ERROR'

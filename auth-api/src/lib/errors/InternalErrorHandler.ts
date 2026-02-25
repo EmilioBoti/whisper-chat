@@ -7,13 +7,11 @@ export default class InternalErrorHandler {
 
   static handler(error: any): AppError | any {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(error.code)
-      switch(error.code) {
-        case USER_REGISTERED_CODE_P2002:
-          return new BadRequestError("This user Already exist.")
-        case USER_REGISTERED_CODE_P2025:
-          return new NotFoundError("Resource not found")
+      const err: Record<string, AppError> = {
+        [USER_REGISTERED_CODE_P2002]: new BadRequestError("This user Already exist."),
+        [USER_REGISTERED_CODE_P2025]: new NotFoundError("Resource not found")
       }
+      return err[error.code]
     }
     return error
   }

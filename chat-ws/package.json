@@ -8,7 +8,7 @@
     "build": "tsc -p tsconfig.build.json",
     "start:prod": "npm run db:deploy && npm run start",
     "start:dev": "npm run dev",
-    "start": "node dist/app.js",
+    "start": "node dist/src/app.js",
     "dev": "nodemon --watch src --exec tsx src/app.ts",
     "db:dev": "npx prisma migrate dev",
     "db:deploy": "npx prisma migrate deploy && npx prisma generate"

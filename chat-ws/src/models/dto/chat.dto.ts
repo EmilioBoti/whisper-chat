@@ -1,4 +1,4 @@
-import { SimpleProfile } from './user.tso.js'
+import { SimpleProfile } from './user.dto.js'
 
 export class SimpleChat {
   constructor(
