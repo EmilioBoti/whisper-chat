@@ -1,13 +1,23 @@
 import type { Request, Response } from "express"
 import { AuthService } from "./auth.service.js"
-import { NewUserModel } from "../../models/dto/user.dtoSchema.js"
+import { NewUserCredential } from "../../models/dto/auth.dto.js"
 import { asyncHandler } from "../../lib/utils/asyncHandler.js"
 import { singUpErrorHandler } from "../../lib/errors/httpErrorHandler.js"
 import { BadRequestError } from "../../lib/errors/BadRequestError.js"
 
 
+export default class AuthController {
+
+  static async deleteUserAccount(req: Request, res: Response) {
+    const { userId } = req.user
+    await AuthService.deleteUserAccount(userId)
+    return res.status(204).json({ success: true })
+  }
+
+}
+
 export async function signInUser(req: Request, res: Response) {
-  const newUser: NewUserModel = req.body
+  const newUser: NewUserCredential = req.body
 
   const error = singUpErrorHandler(newUser)
   
@@ -19,7 +29,7 @@ export async function signInUser(req: Request, res: Response) {
 }
 
 export const signUpUser = asyncHandler( async (req: Request, res: Response) => {
-  const newUser: NewUserModel = req.body
+  const newUser: NewUserCredential = req.body
   const error = singUpErrorHandler(newUser)
 
   if(error) throw error

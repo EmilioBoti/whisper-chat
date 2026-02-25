@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt"
-import { signJwtToken, verifyJwtToken } from "../../lib/jwt.js"
+import { verifyJwtToken } from "../../lib/jwt.js"
 import InternalErrorHandler from "../../lib/errors/InternalErrorHandler.js"
 import { BadRequestError } from "../../lib/errors/BadRequestError.js"
 import { UnAuthorized } from "../../lib/errors/Unauthorized.js"
@@ -20,11 +20,16 @@ export class AuthService {
 
   static async loginUser(newUser: NewUserCredential): Promise<LoginResponse> {
     try {
-      const result = await AuthRepository.findUserByEmail(newUser.email)
-      const hashPassword = await bcrypt.compare(newUser.password, result.user?.password ?? "")
+      const result = await AuthRepository.logUserIn(newUser.email)
 
       if(!result) throw new UnAuthorized("User does not extist.")
-      if(!isValidEmailFormat(newUser.email) || !hashPassword) throw new BadRequestError("Invalid email or password.")
+
+      const hashPassword = await bcrypt.compare(newUser.password, result.user.password)
+
+      if(!isValidEmailFormat(newUser.email) || !hashPassword) {
+        throw new BadRequestError("Invalid email or password.")
+      }
+
       return AuthMapper.toAuthResponse(result.tokens, result.user)
     } catch (error) {
       throw InternalErrorHandler.handler(error)
@@ -69,6 +74,14 @@ export class AuthService {
         message: "Logout successful."
       }
       return logoutResponse
+    } catch (error) {
+      throw InternalErrorHandler.handler(error)
+    }
+  }
+
+  static async deleteUserAccount(id: string): Promise<void> {
+    try {
+      await AuthRepository.deleteUser(id)
     } catch (error) {
       throw InternalErrorHandler.handler(error)
     }

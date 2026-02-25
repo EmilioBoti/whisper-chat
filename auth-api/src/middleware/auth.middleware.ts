@@ -2,7 +2,19 @@
 import type { Request, Response, NextFunction } from "express"
 import { UnAuthorized } from "../lib/errors/Unauthorized.js"
 import { verifyJwtToken } from "../lib/jwt.js"
+import { AuthJwtPayload } from "../models/dto/auth.dto.js"
 
+
+/**
+ * Extend Express Request object to add USER field
+ */
+declare global {
+  namespace Express {
+    interface Request {
+      user: AuthJwtPayload
+    }
+  }
+}
 
 const authMiddleware = (
   req: Request,
@@ -34,7 +46,7 @@ const authMiddleware = (
     /**
      * @throws BadRequestError if token is invalid or has expired
      */
-    verifyJwtToken(token)
+    req.user = verifyJwtToken(token)
 
 
     return next()

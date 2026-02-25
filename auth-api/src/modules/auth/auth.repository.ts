@@ -6,22 +6,24 @@ import { AuthToken } from "../../models/dto/auth.dto.js"
 
 export class AuthRepository {
 
-  public static readonly accessTokenExpiresIn: string = "60m"
+  public static readonly accessTokenExpiresIn: string = process.env.NODE_ENV === 'production' ? '15m' : "1h"
   public static readonly refreshTokenExpiresIn: string = "30d"
 
-  static async findUserByEmail(email: string): Promise<{ tokens: AuthToken, user: User }> {
+  static async logUserIn(email: string): Promise<{ tokens: AuthToken, user: User } | null> {
     return await prisma.$transaction( async (tx) => {
       
-      const user = await prisma.user.findUnique({
+      const user = await tx.user.findUnique({
         where: {
           email: String(email)
         }
-      }) as User
+      })
+
+      if (!user) return null
 
       const accessToken = signJwtToken(user.id, user.email, this.accessTokenExpiresIn)
       const refreshToken = signJwtToken(user.id, user.email, this.refreshTokenExpiresIn)
 
-      await tx.refreshToken.create({
+      await tx.session.create({
         data: {
           userId: String(user.id),
           refreshToken: String(refreshToken)
@@ -53,7 +55,7 @@ export class AuthRepository {
       const accessToken = signJwtToken(user.id, user.email, this.accessTokenExpiresIn)
       const refreshToken = signJwtToken(user.id, user.email, this.refreshTokenExpiresIn)
 
-      await tx.refreshToken.create({
+      await tx.session.create({
         data: {
           userId: String(user.id),
           refreshToken: String(refreshToken)
@@ -70,8 +72,8 @@ export class AuthRepository {
     })
   }
 
-  static async deleteUser(userId: string): Promise<void> {
-    await prisma.user.delete({
+  static async deleteUser(userId: string): Promise<User> {
+    return await prisma.user.delete({
       where: {
         id: userId
       }
@@ -79,7 +81,7 @@ export class AuthRepository {
   }
 
   static async storeRefreshToken(userId: string, refreshToken: string): Promise<any> {
-    return await prisma.refreshToken.create({
+    return await prisma.session.create({
       data: {
         userId: String(userId),
         refreshToken: String(refreshToken)
@@ -88,7 +90,7 @@ export class AuthRepository {
   }
 
   static async deleteRefreshToken(userId: string, refreshToken: string): Promise<any> {
-    return await prisma.refreshToken.deleteMany({
+    return await prisma.session.deleteMany({
       where: {
         userId: String(userId),
         refreshToken: String(refreshToken)
@@ -101,7 +103,7 @@ export class AuthRepository {
       const newAccessToken = signJwtToken(userId, email, this.accessTokenExpiresIn)
       const newRefreshToken = signJwtToken(userId, email, this.refreshTokenExpiresIn)
       
-      await tx.refreshToken.updateMany({
+      await tx.session.updateMany({
         where: {
           userId: String(userId),
           refreshToken: String(oldRefreshToken)

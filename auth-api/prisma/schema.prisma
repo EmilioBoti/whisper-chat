@@ -19,12 +19,12 @@ model User {
   name         String
   password     String
   createAt     DateTime @default(now())
-  refreshToken RefreshToken[]
+  refreshToken Session[]
 }
 
-model RefreshToken {
+model Session {
   id             Int @id @default(autoincrement())
-  userId         String @unique
+  userId         String
   refreshToken   String
   user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
