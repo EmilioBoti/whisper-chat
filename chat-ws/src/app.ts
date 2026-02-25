@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { SocketServer } from './socket/SocketServer.js'
 import { initConnection } from './socket/events/initConnection.js'
 import chatRoutes from './routes/chat.route.js'
+import userRoutes from './routes/user.route.js'
 import { errorMiddleware } from './middleware/error.middleware.js'
 
 const port = Number(process.env.CHAT_WS_SERVER_PORT) || 3002
@@ -27,6 +28,7 @@ app.use(express.json())
 //API Endpoints
 app.get('/ws/health', (req: Request, res: Response) => { res.send('Chat WebSocket Server is running!!!') })
 app.use('/ws/chat', chatRoutes)
+app.use('/ws/user', userRoutes)
 
 /**
  * Register user connection and events

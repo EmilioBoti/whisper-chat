@@ -1,7 +1,7 @@
 import { Profile } from "@prisma/client"
 import { ChatMemberProfile, ChatWithMembers, MemberWithProfile } from "../../models/db.model/chat.model.js"
 import { UserChat, Member, SimpleChat } from "../../models/dto/chat.dto.js"
-import { SimpleProfile } from "src/models/dto/user.tso.js"
+import { SimpleProfile } from "../../models/dto/user.dto.js"
 
 // chat.mapper.ts
 export default class ChatMapper {
