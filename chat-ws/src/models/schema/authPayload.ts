@@ -1,4 +1,4 @@
 export interface AuthPayload {
-  userId: string,
+  userId: string
   email: string
 }

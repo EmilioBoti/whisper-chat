@@ -1,19 +1,13 @@
-
 export class SimpleProfile {
-  public id: string = ''
-  public name: string = ''
+  public id = ''
+  public name = ''
   public photo?: string | null
-  public isPublic: boolean = true
+  public isPublic = true
 
-  constructor(
-    id: string,
-    name: string,
-    photo: string | null,
-    isPublic: boolean
-  ){
+  constructor(id: string, name: string, photo: string | null, isPublic: boolean) {
     this.id = id
-    this.name = name,
-    this.photo = photo,
+    this.name = name
+    this.photo = photo
     this.isPublic = isPublic
   }
 }

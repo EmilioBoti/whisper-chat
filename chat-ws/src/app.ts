@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express'
+import type { Request, Response } from 'express'
+import express from 'express'
 import { createServer } from 'http'
 import dotenv from 'dotenv'
 import { SocketServer } from './socket/SocketServer.js'
@@ -8,9 +9,7 @@ import userRoutes from './routes/user.route.js'
 import { errorMiddleware } from './middleware/error.middleware.js'
 
 const port = Number(process.env.CHAT_WS_SERVER_PORT) || 3002
-const envFile = process.env.NODE_ENV === 'production' 
-  ? '.env.production' 
-  : '.env.development'
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
 
 dotenv.config({ path: envFile })
 
@@ -26,7 +25,7 @@ app.set('trust proxy', true)
 app.use(express.json())
 
 //API Endpoints
-app.get('/ws/health', (req: Request, res: Response) => { res.send('Chat WebSocket Server is running!!!') })
+app.get('/ws/health', (req: Request, res: Response) => res.send('Chat WebSocket Server is running!!!'))
 app.use('/ws/chat', chatRoutes)
 app.use('/ws/user', userRoutes)
 
@@ -38,10 +37,10 @@ initConnection(io)
 
 /**
  * MUST BE LAST
- * Capture error 
+ * Capture error
  */
 app.use(errorMiddleware)
 
-server.listen(port, "0.0.0.0", () => {
-  console.log(`Chat WebSocket Server is running on port: ${port}`)
+server.listen(port, '0.0.0.0', () => {
+  console.info(`Chat WebSocket Server is running on port: ${port}`)
 })

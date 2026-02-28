@@ -1,18 +1,12 @@
 import type { Request, Response } from 'express'
 import { BadRequestError } from '../../lib/errors/BadRequestError.js'
-import UserService from './user.service.js'
+import { createUserProfile } from './user.service.js'
 
-class UserController {
+export const createProfile = async (req: Request, res: Response) => {
+  const { id, name } = req.body
 
-  static async createProfile(req: Request, res: Response) {
-    const { id, name } = req.body
+  if (!id || !name) throw new BadRequestError()
 
-    if(!id || !name) throw new BadRequestError()
-
-    const result = await UserService.createUserProfile({ id, name })
-    return res.status(201).json({ ...result })
-  }
-
+  const result = await createUserProfile({ id, name })
+  return res.status(201).json({ ...result })
 }
-
-export default UserController

@@ -11,6 +11,7 @@ services:
       - .env.development
     ports:
       - "3001:3001"
+      - "5556:5556"  # this for Prisma Studio
     volumes:
       - ./auth-api:/usr/src/app  
       - /usr/src/app/node_modules

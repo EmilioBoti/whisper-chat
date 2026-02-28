@@ -1,15 +1,13 @@
-import { Socket } from 'socket.io'
-import { MessageSentDTO } from '../models/dto/messange.dto.js'
-import OnlineRepository from '../modules/redis/online.repository.js'
-import ChatRepository from '../modules/chat/chat.repository.js'
+import type { Socket } from 'socket.io'
+import type { MessageSentDTO } from '../models/dto/messange.dto.js'
+import { storeMessage } from '../modules/chat/chat.repository.js'
+import { findUserSocket, setUserOffline } from '../modules/redis/online.repository.js'
 
 const MESSAGE = 'MESSAGE'
 const MESSAGE_ERROR = 'MESSAGE_ERROR'
 const DISCONNECT_ERROR = 'DISCONNECT_ERROR'
 
-
 export default class SocketEventHandler {
-
   constructor(private socket: Socket) {
     this.registerEvents()
   }
@@ -21,8 +19,8 @@ export default class SocketEventHandler {
 
   private async onReceiveMessage(data: MessageSentDTO) {
     try {
-      const userSocket = await OnlineRepository.findUserSocket(data.receiver)
-      const message = await ChatRepository.storeMessage(data.chatId, data.sender, data.content)
+      const userSocket = await findUserSocket(data.receiver)
+      const message = await storeMessage(data.chatId, data.sender, data.content)
       if (userSocket) this.socket.to(userSocket).emit(MESSAGE, message)
     } catch (error) {
       console.error('onReceiveMessage error:', error)
@@ -33,7 +31,7 @@ export default class SocketEventHandler {
   private async onUserDisconnect() {
     try {
       const user = this.socket.handshake.auth
-      await OnlineRepository.setUserOffline(user.id)
+      await setUserOffline(user.id)
       this.socket.rooms.delete(this.socket.id)
     } catch (error) {
       console.error('onUserDisconnect error:', error)
@@ -44,7 +42,4 @@ export default class SocketEventHandler {
   private handleError(errorEventName: string, message: string) {
     this.socket.emit(errorEventName, { message: message })
   }
-
-
-
 }

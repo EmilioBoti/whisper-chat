@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import UserController from '../modules/user/user.controller.js'
+import { createProfile } from '../modules/user/user.controller.js'
 
 const router = Router()
 
-router.post('/create-profile', UserController.createProfile)
+router.post('/create-profile', createProfile)
 
 export default router

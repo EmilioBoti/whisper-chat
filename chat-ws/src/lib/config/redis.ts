@@ -1,9 +1,8 @@
-import { createClient, RedisClientType } from 'redis'
+import type { RedisClientType } from 'redis'
+import { createClient } from 'redis'
 
-class RedisClient { 
+class RedisClient {
   private static instance: RedisClientType
-
-  constructor() {}
 
   static getInstance(): RedisClientType {
     if (!this.instance) {
@@ -15,16 +14,22 @@ class RedisClient {
         password: process.env.REDIS_DB_PASSWORD || undefined,
       })
 
-      client.on('error', (err) => {
-         console.error('Redis Error:', err);
-      })
-      client.connect()
+      client.on('error', (err) => console.error('Redis Error:', err))
+      void client.connect()
 
       this.instance = client
     }
     return this.instance
   }
 
+  /**
+   * This method is to avoid the rule "Unexpected class with only static properties."
+   * In this case it's fine
+   * @returns
+   */
+  public isInstanceCreated(): boolean {
+    return RedisClient.instance !== undefined
+  }
 }
 
 export default RedisClient

@@ -1,29 +1,26 @@
 import RedisClient from '../../lib/config/redis.js'
 
+const redisClient = RedisClient.getInstance()
 
-export default class OnlineRepository {
+const onlineKey = (userId: string): string => 'user:#userID'.replace('#userID', userId)
 
-  private static redisClient = RedisClient.getInstance()
+export const findUserSocket = async (userId: string): Promise<string> => {
+  const socketId = await redisClient.hGet(onlineKey(userId), 'socketId')
+  return socketId ?? ''
+}
 
-  static async findUserSocket(userID: string): Promise<string> {
-    const socketId = await this.redisClient.hGet(`user:online:${userID}`, 'socketId')
-    return socketId ?? ''
-  }
+export const isUserOnline = async (userId: string): Promise<boolean> => {
+  return (await redisClient.exists(onlineKey(userId))) === 1
+}
 
-  static async isUserOnline(userId: string): Promise<boolean> {
-    return await this.redisClient.exists(`user:online:${userId}`) === 1
-  }
+export const setUserOnline = async (userId: string, socketId: string): Promise<number> => {
+  return await redisClient.hSet(onlineKey(userId), { socketId: socketId })
+}
 
-  static async setUserOnline(userId: string, socketId: string): Promise<number> {
-    return await this.redisClient.hSet(`user:online:${userId}`, { socketId: socketId })
-  }
+export const setUserOffline = async (userId: string): Promise<number> => {
+  return await redisClient.del(onlineKey(userId))
+}
 
-  static async setUserOffline(userId: string): Promise<number> {
-    return await this.redisClient.del(`user:online:${userId}`)
-  }
-
-  static async updateSocketConnction(userId: string, socketId: string): Promise<number> {
-    return await this.redisClient.hSet(`user:online:${userId}`, { socketId: socketId })
-  }
-
+export const updateSocketConnction = async (userId: string, socketId: string): Promise<number> => {
+  return await redisClient.hSet(onlineKey(userId), { socketId: socketId })
 }

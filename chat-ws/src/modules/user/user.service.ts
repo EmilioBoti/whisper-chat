@@ -1,19 +1,13 @@
-import UserRepository from './user.repository.js'
-import InternalErrorHandler from '../../lib/errors/InternalErrorHandler.js'
-import { SimpleUser } from '../../models/dto/user.dto.js'
-import UserMapper from '../../utils/mapers/user.mapper.js'
+import { createProfile } from './user.repository.js'
+import { internalErrorHandler } from '../../lib/errors/InternalErrorHandler.js'
+import type { SimpleProfile, SimpleUser } from '../../models/dto/user.dto.js'
+import { toSimpleUser } from '../../utils/mapers/user.mapper.js'
 
-class UserService {
-
-  static async createUserProfile(user: SimpleUser) {
-    try {
-      const result = await UserRepository.createUserProfile(user)
-      return UserMapper.toSimpleUser(result)
-    } catch (error) {
-      throw InternalErrorHandler.handler(error)
-    }
+export const createUserProfile = async (user: SimpleUser): Promise<SimpleProfile> => {
+  try {
+    const result = await createProfile(user)
+    return toSimpleUser(result)
+  } catch (error) {
+    throw internalErrorHandler(error)
   }
-
 }
-
-export default UserService
