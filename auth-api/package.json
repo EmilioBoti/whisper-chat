@@ -11,7 +11,9 @@
     "build": "tsc -p tsconfig.build.json",
     "dev": "nodemon --watch src --exec tsx src/app.ts",
     "db:dev": "npx prisma migrate dev && npx prisma generate",
-    "db:deploy": "npx prisma migrate deploy && npx prisma generate"
+    "db:deploy": "npx prisma migrate deploy && npx prisma generate",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "author": "Emilio Botier",
   "license": "MIT",
@@ -31,10 +33,16 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.2.2",
     "@types/pg": "^8.16.0",
+    "eslint": "^10.0.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-security": "^4.0.0",
     "nodemon": "^3.1.11",
+    "prettier": "3.8.1",
     "prisma": "^7.4.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1"
   }
 }

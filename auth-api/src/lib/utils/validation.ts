@@ -1,7 +1,5 @@
-
-
 /**
- * 
+ *
  * @param username validete username length
  * @returns true is username lenght is greater than 3 characters, false otherwise
  */
@@ -10,7 +8,7 @@ export const isValidUsername = (username: string): boolean => {
 }
 
 /**
- * 
+ *
  * @param password validate user's password
  * @returns true is user password has at least:
  * - One digit number
@@ -23,9 +21,9 @@ export const isValidPwdFormat = (password: string): boolean => {
 }
 
 /**
- * 
+ *
  * @param email validate user's email
- * @returns true if: 
+ * @returns true if:
  * - include "@""
  * - at least one character before @
  * - domain

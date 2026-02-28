@@ -1,9 +1,9 @@
 export class AuthUser {
-  id: string = ''
-  name: string = ''
-  email: string = ''
+  id = ''
+  name = ''
+  email = ''
   password?: string | null
-  createdAt: string = ''
+  createdAt = ''
 
   constructor(id: string, name: string, email: string, createdAt: string, password?: string) {
     this.id = id
@@ -12,31 +12,28 @@ export class AuthUser {
     this.password = password
     this.createdAt = createdAt
   }
-
 }
 
 export interface LoginResponse {
-  tokens: AuthToken,
+  tokens: AuthToken
   user: SimpleAuthUser
 }
 
 export interface AuthJwtPayload {
-  userId: string,
+  userId: string
   email: string
 }
 
 export interface LogoutResponse {
-  isSuccess: boolean,
+  isSuccess: boolean
   message: string
 }
 
 export interface AuthToken {
-  accessToken: string,
+  accessToken: string
   refreshToken: string
 }
 
 export type SimpleAuthUser = Omit<AuthUser, 'password'>
 type BaseCredential = Pick<AuthUser, 'name' | 'email'>
 export type NewUserCredential = BaseCredential & { password: string }
-
-
