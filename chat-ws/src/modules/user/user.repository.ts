@@ -10,3 +10,11 @@ export const createProfile = async (userProfile: SimpleUser): Promise<Profile> =
     },
   })
 }
+
+export const findUsers = async (isPublic: boolean): Promise<Profile[]> => {
+  return prisma.profile.findMany({
+    where: {
+      isPublic: isPublic,
+    },
+  })
+}
