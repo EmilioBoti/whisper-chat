@@ -49,7 +49,7 @@ model ChatMember {
 }
 
 model Message {
-  id           String @id @default(uuid())
+  id           String @id @default(ulid())
   chatId       String
   senderId     String
   content      String

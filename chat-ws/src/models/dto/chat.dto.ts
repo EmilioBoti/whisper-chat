@@ -1,3 +1,4 @@
+import type { MessageDTO } from './messange.dto.js'
 import type { SimpleProfile } from './user.dto.js'
 
 export class SimpleChat {
@@ -13,17 +14,28 @@ export class SimpleChat {
   }
 }
 
-export class UserChat extends SimpleChat {
+export class ChatRoom extends SimpleChat {
   id = ''
   type = ''
   createdBy = ''
   createdAt = ''
-  members: Member[] = []
-  constructor(id: string, type: string, createdBy: string, createdAt: string, members: Member[]) {
+  members?: Member[] | undefined
+  messages?: MessageDTO[] | undefined
+  constructor(
+    id: string,
+    type: string,
+    createdBy: string,
+    createdAt: string,
+    members?: Member[],
+    messages?: MessageDTO[],
+  ) {
     super(id, type, createdBy, createdAt)
     this.members = members
+    this.messages = messages
   }
 }
+
+export type ChatRoomWithMember = Omit<ChatRoom, 'messages'>
 
 export class Member {
   id = ''

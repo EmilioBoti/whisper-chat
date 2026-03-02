@@ -26,6 +26,20 @@ export const upsertDirectChat = async (userId: string, userBId: string): Promise
   return chat
 }
 
+export const findChatMessages = async (id: string, limit: number, cursor?: string): Promise<Message[]> => {
+  return prisma.message.findMany({
+    where: { chatId: id },
+    orderBy: { id: 'desc' },
+    take: limit,
+    ...(cursor && {
+      skip: 1,
+      cursor: {
+        id: cursor,
+      },
+    }),
+  })
+}
+
 export const storeMessage = async (chatId: string, senderId: string, content: string): Promise<Message> => {
   return await prisma.message.create({
     data: {
