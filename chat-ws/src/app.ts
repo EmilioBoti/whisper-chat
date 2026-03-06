@@ -1,43 +1,46 @@
-import express, { Request, Response } from 'express'
+import type { Request, Response } from 'express'
+import express from 'express'
 import { createServer } from 'http'
 import dotenv from 'dotenv'
-import { Server } from 'socket.io'
+import { SocketServer } from './socket/SocketServer.js'
+import { initConnection } from './socket/events/initConnection.js'
+import chatRoutes from './routes/chat.route.js'
+import userRoutes from './routes/user.route.js'
+import { errorMiddleware } from './middleware/error.middleware.js'
+
+const port = Number(process.env.CHAT_WS_SERVER_PORT) || 3002
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
+
+dotenv.config({ path: envFile })
 
 const app = express()
 const server = createServer(app)
 
-const io = new Server(server, {
-  cors: {
-    origin: "*", //remove "*" for production
-  }
-})
+const io = SocketServer.initSocket(server)
 
-const port = Number(process.env.CHAT_WS_SERVER_PORT) || 3002
-const envFile = process.env.NODE_ENV === 'production' 
-  ? '.env.production' 
-  : '.env.development'
+// trust first proxy
+app.set('trust proxy', true)
 
-dotenv.config({ path: envFile })
-
-app.set('trust proxy', true) // trust first proxy
+//Middlewares
 app.use(express.json())
 
-app.get('/ws/health', (req: Request, res: Response) => { res.send('Chat WebSocket Server is running!!!') })
+//API Endpoints
+app.get('/ws/health', (req: Request, res: Response) => res.send('Chat WebSocket Server is running!!!'))
+app.use('/ws/chat', chatRoutes)
+app.use('/ws/user', userRoutes)
 
-io.on("connection", (socket) => {
-  console.log('a user connected:', socket.id)
+/**
+ * Register user connection and events
+ * @argument Server
+ */
+initConnection(io)
 
-  socket.on("chat-message", (msg) => {
-    console.log('message received:', msg)
-    // io.emit("chat message", msg) // broadcast the message to all connected clients
-  })
+/**
+ * MUST BE LAST
+ * Capture error
+ */
+app.use(errorMiddleware)
 
-})
-
-io.on("disconnect", (socket) => {
-  console.log('user disconnected:', socket.id)
-})
-
-server.listen(port, "0.0.0.0", () => {
-  console.log(`Chat WebSocket Server is running on port: ${port}`)
+server.listen(port, '0.0.0.0', () => {
+  console.info(`Chat WebSocket Server is running on port: ${port}`)
 })

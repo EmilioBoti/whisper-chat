@@ -25,10 +25,9 @@ enum ChatMemberRole {
 model Chat {
   id        String @id @default(uuid())
   type      ChatType
-  userA     String
-  userB     String
   createdBy String
   createdAt DateTime @default(now())
+  directKey String? @unique
 
   members   ChatMember[]
   messages  Message[]
@@ -43,20 +42,37 @@ model ChatMember {
   joinedAt     DateTime @default(now())
 
   chat         Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  profile      Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([chatId, userId])
   @@index([userId])
 }
 
 model Message {
-  id           String @id @default(uuid())
+  id           String @id @default(ulid())
   chatId       String
   senderId     String
   content      String
   createdAt    DateTime @default(now())
+  
+  chat         Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
-  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  @@index([chatId, senderId])
+}
 
-  @@index([chatId])
-  @@index([senderId])
+model Profile {
+  id          String @id
+  name        String
+  lastname    String?
+  birthDate   DateTime?
+  photo       String?
+  about       String?
+  isPublic    Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members   ChatMember[]
+
+  @@index([id])
+
 }

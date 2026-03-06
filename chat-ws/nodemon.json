@@ -3,6 +3,6 @@
   "ext": "js,ts,json",
   "exec": "ts-node src/app.ts",
   "legacyWatch": true,
-  "ignore": ["node_modules/"],
+  "ignore": ["node_modules", "dist"],
   "delay": 1
 }

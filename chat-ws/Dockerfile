@@ -23,6 +23,9 @@ RUN npm ci
 COPY prisma.config.ts ./
 COPY prisma ./prisma
 
+# Generate Prisma Client BEFORE building
+RUN npx prisma generate
+
 # Expose DATABASE_URL at build time (pass with --build-arg DATABASE_URL)
 ENV DATABASE_URL=${DATABASE_URL_CHAT}
 
@@ -58,6 +61,11 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 RUN npm install
+
+COPY prisma ./prisma
+COPY prisma.config.ts ./prisma.config.ts
+
+RUN npx prisma generate
 
 # Copy the rest of the source files into the image.
 COPY . .

@@ -1,31 +1,22 @@
+import type { Request, Response, NextFunction } from 'express'
+import { UnAuthorized } from '../lib/errors/Unauthorized.js'
+import { verifyJwtToken } from '../lib/jwt.js'
 
-import type { Request, Response, NextFunction } from "express"
-import { UnAuthorized } from "../lib/errors/Unauthorized.js"
-import { verifyJwtToken } from "../lib/jwt.js"
-
-
-const authMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization']
 
   if (!authHeader) {
-    throw new UnAuthorized("Unauthorized: No token provided.")
+    throw new UnAuthorized('Unauthorized: No token provided.')
   }
 
-  if(!authHeader.startsWith('Bearer ')) {
-    throw new UnAuthorized("Unauthorized: Invalid token format.")
+  if (!authHeader.startsWith('Bearer ')) {
+    throw new UnAuthorized('Unauthorized: Invalid token format.')
   }
 
   try {
     const token = authHeader.split(' ')[1]
 
-    if(!token) {
-      throw new UnAuthorized("Unauthorized: No token provided.")
-    }
-    
+    if (!token) throw new UnAuthorized('Unauthorized: No token provided.')
     /**
      * Skip token verification for refresh token endpoint
      */
@@ -34,14 +25,12 @@ const authMiddleware = (
     /**
      * @throws BadRequestError if token is invalid or has expired
      */
-    verifyJwtToken(token)
-
+    req.user = verifyJwtToken(token)
 
     return next()
-  } catch (error) {
-    throw new UnAuthorized("Invalid or expired token")
+  } catch {
+    throw new UnAuthorized('Invalid or expired token')
   }
-
 }
 
 export default authMiddleware

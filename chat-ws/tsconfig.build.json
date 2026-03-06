@@ -8,7 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
-    "rootDir": "src",
+    "rootDir": "./",
     "outDir": "dist",
     "baseUrl": "./",
     "paths": {
@@ -24,8 +24,6 @@
   ],
   "exclude": [
     "node_modules", 
-    "dist", 
-    "prisma",
-    "prisma.config.ts"
+    "dist"
   ]
 }
