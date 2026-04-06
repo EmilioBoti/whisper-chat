@@ -41,10 +41,13 @@ export const registerNewUser = async (newUser: NewUserCredential): Promise<Login
 
     createdUser = result.user
 
+    console.info(result)
+
     await createProfile(result.user.id, result.user.name)
 
     return toAuthResponse(result.tokens, result.user)
   } catch (error) {
+    console.error(error)
     /**
      * If createProfile fails delete the newUser created
      */

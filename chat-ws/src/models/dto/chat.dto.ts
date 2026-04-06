@@ -6,11 +6,13 @@ export class SimpleChat {
   type = ''
   createdBy = ''
   createdAt = ''
-  constructor(id: string, type: string, createdBy: string, createdAt: string) {
+  lastMessages?: MessageDTO | undefined
+  constructor(id: string, type: string, createdBy: string, createdAt: string, lastMessages?: MessageDTO) {
     this.id = id
     this.type = type
     this.createdBy = createdBy
     this.createdAt = createdAt
+    this.lastMessages = lastMessages
   }
 }
 
@@ -20,18 +22,16 @@ export class ChatRoom extends SimpleChat {
   createdBy = ''
   createdAt = ''
   members?: Member[] | undefined
-  messages?: MessageDTO[] | undefined
   constructor(
     id: string,
     type: string,
     createdBy: string,
     createdAt: string,
     members?: Member[],
-    messages?: MessageDTO[],
+    lastMessages?: MessageDTO,
   ) {
-    super(id, type, createdBy, createdAt)
+    super(id, type, createdBy, createdAt, lastMessages)
     this.members = members
-    this.messages = messages
   }
 }
 

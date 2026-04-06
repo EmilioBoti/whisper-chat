@@ -2,7 +2,7 @@ import { upsertDirectChat, getUserChats, findChatMessages } from './chat.reposit
 import { internalErrorHandler } from '../../lib/errors/InternalErrorHandler.js'
 import type { SimpleChat, ChatRoom } from '../../models/dto/chat.dto.js'
 import { toSimpleChat, toListUserChat, toPaginatedMessages } from '../../utils/mapers/chat.mapper.js'
-import type { PaginatedMessages } from 'src/models/dto/messange.dto.js'
+import type { PaginatedMessages } from '../../models/dto/messange.dto.js'
 
 export const findOrCreateDirectChat = async (userId: string, userBId: string): Promise<SimpleChat> => {
   try {

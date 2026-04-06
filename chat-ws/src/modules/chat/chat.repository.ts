@@ -63,6 +63,10 @@ export const getUserChats = async (userId: string): Promise<ChatMemberProfile[]>
           profile: true,
         },
       },
+      messages: {
+        take: 1,
+        orderBy: { id: 'desc' },
+      },
     },
   })
 }
