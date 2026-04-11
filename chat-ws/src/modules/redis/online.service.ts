@@ -1,8 +1,10 @@
+import { varifyToken } from '../../middleware/auth.middleware.js'
 import { updateSocketConnction, setUserOffline } from './online.repository.js'
 
-export const userIsOnline = async (userId: string, socketId: string): Promise<boolean> => {
+export const userIsOnline = async (token: string, socketId: string): Promise<boolean> => {
   try {
-    await updateSocketConnction(userId, socketId)
+    const user = varifyToken(token)
+    await updateSocketConnction(user.userId, socketId)
     return true
   } catch (error) {
     console.error('Error setting user online:', error)

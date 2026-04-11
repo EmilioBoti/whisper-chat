@@ -3,7 +3,7 @@ import type { MessageSentDTO } from '../models/dto/messange.dto.js'
 import { storeMessage } from '../modules/chat/chat.repository.js'
 import { findUserSocket, setUserOffline } from '../modules/redis/online.repository.js'
 
-const MESSAGE = 'MESSAGE'
+const NEW_MESSAGE = 'NEW_MESSAGE'
 const MESSAGE_ERROR = 'MESSAGE_ERROR'
 const DISCONNECT_ERROR = 'DISCONNECT_ERROR'
 
@@ -13,7 +13,7 @@ export default class SocketEventHandler {
   }
 
   private registerEvents() {
-    this.socket.on(MESSAGE, this.onReceiveMessage.bind(this))
+    this.socket.on(NEW_MESSAGE, this.onReceiveMessage.bind(this))
     this.socket.on('disconnect', this.onUserDisconnect.bind(this))
   }
 
@@ -21,7 +21,7 @@ export default class SocketEventHandler {
     try {
       const userSocket = await findUserSocket(data.receiver)
       const message = await storeMessage(data.chatId, data.sender, data.content)
-      if (userSocket) this.socket.to(userSocket).emit(MESSAGE, message)
+      if (userSocket) this.socket.to(userSocket).emit(NEW_MESSAGE, message)
     } catch (error) {
       console.error('onReceiveMessage error:', error)
       this.handleError(MESSAGE_ERROR, 'An error occurred while sending the message.')

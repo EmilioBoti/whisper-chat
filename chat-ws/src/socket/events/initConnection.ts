@@ -8,12 +8,12 @@ export const initConnection = (io: Server) => {
    * @argument Socket
    */
   io.on('connection', async (socket: Socket) => {
-    const user = socket.handshake.auth
+    const token = socket.handshake.auth['token']
     /**
      * This is a simple mecanism to handle user events connection
      * Must use Redis to handle user connection and reconection in a more robust way
      */
-    const isOnline = await userIsOnline(user.id, socket.id)
+    const isOnline = await userIsOnline(token, socket.id)
     if (!isOnline) {
       socket.disconnect()
       return
