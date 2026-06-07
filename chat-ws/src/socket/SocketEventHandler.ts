@@ -13,14 +13,14 @@ export default class SocketEventHandler {
   }
 
   private registerEvents() {
-    this.socket.on(NEW_MESSAGE, this.onReceiveMessage.bind(this))
+    this.socket.on(NEW_MESSAGE, this.onNewMessage.bind(this))
     this.socket.on('disconnect', this.onUserDisconnect.bind(this))
   }
 
-  private async onReceiveMessage(data: MessageSentDTO) {
+  private async onNewMessage(data: MessageSentDTO) {
     try {
-      const userSocket = await findUserSocket(data.receiver)
-      const message = await storeMessage(data.chatId, data.sender, data.content)
+      const userSocket = await findUserSocket(data.receiverIds)
+      const message = await storeMessage(data.chatId, data.senderId, data.content)
       if (userSocket) this.socket.to(userSocket).emit(NEW_MESSAGE, message)
     } catch (error) {
       console.error('onReceiveMessage error:', error)
