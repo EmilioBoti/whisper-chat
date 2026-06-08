@@ -1,14 +1,15 @@
+import type { AuthPayload } from 'src/models/schema/authPayload.js'
 import { varifyToken } from '../../middleware/auth.middleware.js'
 import { updateSocketConnction, setUserOffline } from './online.repository.js'
 
-export const userIsOnline = async (token: string, socketId: string): Promise<boolean> => {
+export const userIsOnline = async (token: string, socketId: string): Promise<AuthPayload | null> => {
   try {
-    const user = varifyToken(token)
+    const user: AuthPayload = varifyToken(token)
     await updateSocketConnction(user.userId, socketId)
-    return true
+    return user
   } catch (error) {
     console.error('Error setting user online:', error)
-    return false
+    return null
   }
 }
 
