@@ -1,16 +1,26 @@
+import type { Message } from '@prisma/client'
+
+type type = 'TEXT' | 'IMAGE'
+type Status = 'PENDING' | 'SENT' | 'RECEIVED' | 'READ'
+
 export class MessageDTO {
   id = ''
   chatId = ''
   senderId = ''
   content = ''
   createdAt = ''
+  attributes: MessageAttribute = { status: 'PENDING', type: 'TEXT' }
 
-  constructor(id: string, chatId: string, senderId: string, content: string, createdAt: string) {
-    this.id = id
-    this.chatId = chatId
-    this.content = content
-    this.senderId = senderId
-    this.createdAt = createdAt
+  constructor(message: Message) {
+    this.id = message.id
+    this.chatId = message.chatId
+    this.content = message.content
+    this.senderId = message.senderId
+    this.createdAt = message.createdAt.toISOString()
+    this.attributes = {
+      status: message.status,
+      type: message.type,
+    }
   }
 }
 
@@ -25,4 +35,9 @@ export interface MessageSentDTO {
 export interface PaginatedMessages {
   nextCursor: string | null
   messages: MessageDTO[]
+}
+
+export interface MessageAttribute {
+  status: Status
+  type: type
 }

@@ -1,13 +1,12 @@
 import type { Server, Socket } from 'socket.io'
 import { userIsOnline } from '../../modules/redis/online.service.js'
 import type { MessageSentDTO } from 'src/models/dto/messange.dto.js'
-import { storeMessage } from 'src/modules/chat/chat.repository.js'
-import { toMessage } from 'src/utils/mapers/chat.mapper.js'
 import { decodeToken } from 'src/middleware/auth.middleware.js'
 import { setUserOffline } from 'src/modules/redis/online.repository.js'
+import { MessageStatus } from '@prisma/client'
+import { acknowledgeMessageReceived, storeNewMessage, updateStatus } from 'src/modules/chat/chat.service.js'
 
 const NEW_MESSAGE = 'NEW_MESSAGE'
-const MESSAGE_ERROR = 'MESSAGE_ERROR'
 
 export const initConnection = (io: Server) => {
   /**
@@ -17,8 +16,7 @@ export const initConnection = (io: Server) => {
   io.on('connection', async (socket: Socket) => {
     const token = socket.handshake.auth['token']
     /**
-     * This is a simple mecanism to handle user events connection
-     * Must use Redis to handle user connection and reconection in a more robust way
+     * Set user connection as online
      */
     const userOnline = await userIsOnline(token, socket.id)
 
@@ -26,16 +24,27 @@ export const initConnection = (io: Server) => {
       socket.disconnect()
       return
     } else {
+      /**
+       * Create a private message room for each user connection
+       */
       await socket.join(userOnline.userId)
     }
 
-    socket.on(NEW_MESSAGE, async (data: MessageSentDTO) => {
+    socket.on(NEW_MESSAGE, async (data: MessageSentDTO, acknowledgeMessageSent: (strig: MessageSentDTO) => void) => {
       try {
-        const message = await storeMessage(data.chatId, data.senderId, data.content).then((data) => toMessage(data))
-        io.in(data.receiverIds).except(data.senderId).emit(NEW_MESSAGE, message)
+        const message = await storeNewMessage(data)
+        io.timeout(70000)
+          .in(data.receiverIds)
+          .except(data.senderId)
+          .emit(NEW_MESSAGE, message, acknowledgeMessageReceived)
+
+        await updateStatus(message.id, MessageStatus.SENT)
+        /**
+         * The message was sent properly to the users
+         */
+        acknowledgeMessageSent(data)
       } catch (error) {
         console.error('onReceiveMessage error:', error)
-        socket.emit(MESSAGE_ERROR, { message: 'An error occurred while sending the message.' })
       }
     })
 
@@ -48,7 +57,6 @@ export const initConnection = (io: Server) => {
         socket.rooms.delete(user.userId)
       } catch (error) {
         console.error('onUserDisconnect error:', error)
-        socket.emit(MESSAGE_ERROR, { message: 'An error occurred while trying to disconnect the user.' })
       }
     })
   })

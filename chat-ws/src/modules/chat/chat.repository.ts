@@ -1,4 +1,4 @@
-import type { ChatType, Message } from '@prisma/client'
+import type { ChatType, Message, MessageStatus } from '@prisma/client'
 import { prisma } from '../../lib/config/prisma.js'
 import type { ChatMemberProfile, ChatWithMembers } from '../../models/db.model/chat.model.js'
 
@@ -46,6 +46,15 @@ export const storeMessage = async (chatId: string, senderId: string, content: st
       chatId: chatId,
       senderId: senderId,
       content: content,
+    },
+  })
+}
+
+export const updateMessageStatus = async (messageId: string, status: MessageStatus) => {
+  await prisma.message.update({
+    where: { id: messageId },
+    data: {
+      status: status,
     },
   })
 }

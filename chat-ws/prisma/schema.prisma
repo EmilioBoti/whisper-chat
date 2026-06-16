@@ -22,6 +22,17 @@ enum ChatMemberRole {
   MEMBER
 }
 
+enum MessageStatus {
+  PENDING
+  SENT
+  RECEIVED
+  READ
+}
+
+enum MessageType {
+  TEXT
+}
+
 model Chat {
   id        String @id @default(uuid())
   type      ChatType
@@ -53,6 +64,8 @@ model Message {
   chatId       String
   senderId     String
   content      String
+  status      MessageStatus @default(PENDING)
+  type        MessageType @default(TEXT)
   createdAt    DateTime @default(now())
   
   chat         Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
