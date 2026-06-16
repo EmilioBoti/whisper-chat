@@ -57,16 +57,18 @@ export const updateStatus = async (messageId: string, status: MessageStatus) => 
   }
 }
 
-export const acknowledgeMessageReceived = async (err: unknown, response: { messageId: string }) => {
-  if (err) {
-    console.error(err)
+export const acknowledgeMessageReceived = async (err: unknown, responseIds: string[]) => {
+  try {
     /**
      * The message was not reached by the other side
      */
-  } else {
+    if (err) throw err
+
     /**
      * The message was reached by the other side
      */
-    await updateMessageStatus(response.messageId, MessageStatus.RECEIVED)
+    await Promise.all(responseIds.map((id) => updateMessageStatus(id, MessageStatus.RECEIVED)))
+  } catch (error) {
+    console.error(error)
   }
 }

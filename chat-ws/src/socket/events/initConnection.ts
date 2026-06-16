@@ -1,6 +1,6 @@
 import type { Server, Socket } from 'socket.io'
 import { userIsOnline } from '../../modules/redis/online.service.js'
-import type { MessageSentDTO } from 'src/models/dto/messange.dto.js'
+import type { MessageDTO, MessageSentDTO } from 'src/models/dto/messange.dto.js'
 import { decodeToken } from 'src/middleware/auth.middleware.js'
 import { setUserOffline } from 'src/modules/redis/online.repository.js'
 import { MessageStatus } from '@prisma/client'
@@ -30,7 +30,7 @@ export const initConnection = (io: Server) => {
       await socket.join(userOnline.userId)
     }
 
-    socket.on(NEW_MESSAGE, async (data: MessageSentDTO, acknowledgeMessageSent: (strig: MessageSentDTO) => void) => {
+    socket.on(NEW_MESSAGE, async (data: MessageSentDTO, acknowledgeMessageSent: (strig: MessageDTO) => void) => {
       try {
         const message = await storeNewMessage(data)
         io.timeout(70000)
@@ -42,7 +42,7 @@ export const initConnection = (io: Server) => {
         /**
          * The message was sent properly to the users
          */
-        acknowledgeMessageSent(data)
+        acknowledgeMessageSent(message)
       } catch (error) {
         console.error('onReceiveMessage error:', error)
       }
