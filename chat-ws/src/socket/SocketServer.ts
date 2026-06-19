@@ -10,6 +10,10 @@ export class SocketServer {
         cors: {
           origin: '*', //remove "*" for production
         },
+        connectionStateRecovery: {
+          maxDisconnectionDuration: 60000,
+          skipMiddlewares: true,
+        },
       })
     }
     return this.io

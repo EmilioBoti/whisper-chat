@@ -55,7 +55,6 @@ export const varifyToken = (token: string): AuthPayload => {
 
 export const decodeToken = (token: string): AuthPayload => {
   try {
-    jwt.decode(token)
     const payload = jwt.decode(token) as AuthPayload
     return payload
   } catch {

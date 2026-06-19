@@ -4,12 +4,19 @@ import {
   findChatMessages,
   storeMessage,
   updateMessageStatus,
+  findPendingMessage,
 } from './chat.repository.js'
 import { internalErrorHandler } from '../../lib/errors/InternalErrorHandler.js'
 import type { SimpleChat, ChatRoom } from '../../models/dto/chat.dto.js'
-import { toSimpleChat, toListUserChat, toPaginatedMessages, toMessage } from '../../utils/mapers/chat.mapper.js'
+import {
+  toSimpleChat,
+  toListUserChat,
+  toPaginatedMessages,
+  toMessage,
+  toMessages,
+} from '../../utils/mapers/chat.mapper.js'
 import type { MessageDTO, MessageSentDTO, PaginatedMessages } from '../../models/dto/messange.dto.js'
-import { MessageStatus } from '@prisma/client'
+import type { MessageStatus } from '@prisma/client'
 
 export const findOrCreateDirectChat = async (userId: string, userBId: string): Promise<SimpleChat> => {
   try {
@@ -39,9 +46,18 @@ export const fetchChatRoomMessage = async (id: string, limit?: number, cursor?: 
   }
 }
 
+export const fetchPendingMessage = async (userId: string) => {
+  try {
+    const chats = await findPendingMessage(userId)
+    return toMessages(chats)
+  } catch (error) {
+    throw internalErrorHandler(error)
+  }
+}
+
 export const storeNewMessage = async (newMessage: MessageSentDTO): Promise<MessageDTO> => {
   try {
-    return await storeMessage(newMessage.chatId, newMessage.senderId, newMessage.content).then((data) =>
+    return await storeMessage(newMessage.id, newMessage.chatId, newMessage.senderId, newMessage.content).then((data) =>
       toMessage(data),
     )
   } catch (error) {
@@ -49,26 +65,10 @@ export const storeNewMessage = async (newMessage: MessageSentDTO): Promise<Messa
   }
 }
 
-export const updateStatus = async (messageId: string, status: MessageStatus) => {
+export const updateStatus = async (messageIds: string[], status: MessageStatus) => {
   try {
-    await updateMessageStatus(messageId, status)
+    await updateMessageStatus(messageIds, status)
   } catch (error) {
     throw internalErrorHandler(error)
-  }
-}
-
-export const acknowledgeMessageReceived = async (err: unknown, responseIds: string[]) => {
-  try {
-    /**
-     * The message was not reached by the other side
-     */
-    if (err) throw err
-
-    /**
-     * The message was reached by the other side
-     */
-    await Promise.all(responseIds.map((id) => updateMessageStatus(id, MessageStatus.RECEIVED)))
-  } catch (error) {
-    console.error(error)
   }
 }

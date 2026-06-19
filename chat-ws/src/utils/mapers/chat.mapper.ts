@@ -1,5 +1,10 @@
 import type { Message, Profile } from '@prisma/client'
-import type { ChatMemberProfile, ChatWithMembers, MemberWithProfile } from '../../models/db.model/chat.model.js'
+import type {
+  ChatMemberProfile,
+  ChatWithMembers,
+  ChatWithMessage,
+  MemberWithProfile,
+} from '../../models/db.model/chat.model.js'
 import type { ChatRoom, Member, SimpleChat } from '../../models/dto/chat.dto.js'
 import type { SimpleProfile } from '../../models/dto/user.dto.js'
 import type { PaginatedMessages } from '../../models/dto/messange.dto.js'
@@ -32,6 +37,12 @@ export const toUserChat = (chat: ChatMemberProfile): ChatRoom => {
 
 export const toMessage = (message: Message): MessageDTO => {
   return new MessageDTO(message)
+}
+
+export const toMessages = (chatWithMessage: ChatWithMessage[]): MessageDTO[] => {
+  return chatWithMessage.flatMap((chat) => {
+    return chat.messages.map((sms) => new MessageDTO(sms))
+  })
 }
 
 export const toPaginatedMessages = (messages: Message[], limit: number): PaginatedMessages => {

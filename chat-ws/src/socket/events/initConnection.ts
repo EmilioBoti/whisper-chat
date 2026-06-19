@@ -1,12 +1,13 @@
-import type { Server, Socket } from 'socket.io'
+import type { DisconnectReason, Server, Socket } from 'socket.io'
 import { userIsOnline } from '../../modules/redis/online.service.js'
 import type { MessageDTO, MessageSentDTO } from 'src/models/dto/messange.dto.js'
-import { decodeToken } from 'src/middleware/auth.middleware.js'
-import { setUserOffline } from 'src/modules/redis/online.repository.js'
+import { decodeToken } from '../../middleware/auth.middleware.js'
 import { MessageStatus } from '@prisma/client'
-import { acknowledgeMessageReceived, storeNewMessage, updateStatus } from 'src/modules/chat/chat.service.js'
+import { fetchPendingMessage, storeNewMessage, updateStatus } from '../../modules/chat/chat.service.js'
+import { updateMessageStatus } from 'src/modules/chat/chat.repository.js'
 
 const NEW_MESSAGE = 'NEW_MESSAGE'
+const RECOVERY_CONNECTION = 'RECOVERY_CONNECTION'
 
 export const initConnection = (io: Server) => {
   /**
@@ -18,27 +19,68 @@ export const initConnection = (io: Server) => {
     /**
      * Set user connection as online
      */
-    const userOnline = await userIsOnline(token, socket.id)
+    const user = await userIsOnline(token, socket.id)
 
-    if (!userOnline) {
+    if (!user) {
       socket.disconnect()
       return
     } else {
       /**
        * Create a private message room for each user connection
        */
-      await socket.join(userOnline.userId)
+      await socket.join(user.userId)
+    }
+
+    if (!socket.recovered) {
+      try {
+        const pendingMessages = await fetchPendingMessage(user.userId)
+        console.info(`pendingMessages: ${pendingMessages.length}`)
+        if (pendingMessages.length > 0) {
+          io.timeout(7000)
+            .to(user.userId)
+            .emit(RECOVERY_CONNECTION, pendingMessages, async (err: unknown, responseIds: string[][]) => {
+              try {
+                /**
+                 * The message was not reached by the other side
+                 */
+                if (err) console.error(`error`, { ...err })
+                /**
+                 * The message was reached by the other side
+                 */
+                const ids = responseIds.flat()
+                await updateMessageStatus(ids, MessageStatus.RECEIVED)
+              } catch (error) {
+                console.error(`error-2`, error)
+              }
+            })
+        }
+      } catch (error) {
+        console.error(error)
+      }
     }
 
     socket.on(NEW_MESSAGE, async (data: MessageSentDTO, acknowledgeMessageSent: (strig: MessageDTO) => void) => {
       try {
         const message = await storeNewMessage(data)
-        io.timeout(70000)
+        io.timeout(7000)
           .in(data.receiverIds)
-          .except(data.senderId)
-          .emit(NEW_MESSAGE, message, acknowledgeMessageReceived)
+          // .except(data.senderId)
+          .emit(NEW_MESSAGE, message, async (err: unknown, responseIds: string[]) => {
+            try {
+              /**
+               * The message was not reached by the other side
+               */
+              if (err) console.error(`error`, { ...err })
+              /**
+               * The message was reached by the other side
+               */
+              await updateMessageStatus(responseIds, MessageStatus.RECEIVED)
+            } catch (error) {
+              console.error(`error-2`, error)
+            }
+          })
 
-        await updateStatus(message.id, MessageStatus.SENT)
+        await updateStatus([message.id], MessageStatus.SENT)
         /**
          * The message was sent properly to the users
          */
@@ -48,13 +90,16 @@ export const initConnection = (io: Server) => {
       }
     })
 
-    socket.on('disconnect', async (reason) => {
+    socket.on('disconnect', async (reason: DisconnectReason) => {
       try {
         const token = socket.handshake.auth.token
         const user = decodeToken(token)
-        console.info('socket disconnected', { socketId: socket.id, userId: user.email, reason })
-        await setUserOffline(user.userId)
-        socket.rooms.delete(user.userId)
+        console.info('socket disconnected', {
+          socketId: socket.id,
+          userId: user.email,
+          reason,
+          auth: socket.handshake.auth,
+        })
       } catch (error) {
         console.error('onUserDisconnect error:', error)
       }

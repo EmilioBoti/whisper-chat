@@ -25,6 +25,7 @@ export class MessageDTO {
 }
 
 export interface MessageSentDTO {
+  id: string
   senderId: string
   receiverIds: string[]
   chatId: string
