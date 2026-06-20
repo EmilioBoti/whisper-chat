@@ -1,12 +1,21 @@
 import type { Server as HttpServer } from 'http'
+import type { Socket } from 'socket.io'
 import { Server as ServerSocket } from 'socket.io'
+import type { AuthPayload } from '../models/schema/authPayload.js'
+
+export type AppIO = ServerSocket<Record<string, any>, Record<string, any>, Record<string, any>, SocketData>
+export type AppSocket = Socket<Record<string, any>, Record<string, any>, Record<string, any>, SocketData>
+
+export interface SocketData {
+  user: AuthPayload
+}
 
 export class SocketServer {
-  private static io?: ServerSocket = undefined
+  private static io?: AppIO = undefined
 
-  static initSocket(server: HttpServer): ServerSocket {
+  static initSocket(server: HttpServer): AppIO {
     if (!this.io) {
-      this.io = new ServerSocket(server, {
+      this.io = new ServerSocket<object, object, object, SocketData>(server, {
         cors: {
           origin: '*', //remove "*" for production
         },
@@ -19,7 +28,7 @@ export class SocketServer {
     return this.io
   }
 
-  static getIOSocket(): ServerSocket {
+  static getIOSocket(): AppIO {
     if (!this.io) {
       throw new Error('Socket not initialized')
     }

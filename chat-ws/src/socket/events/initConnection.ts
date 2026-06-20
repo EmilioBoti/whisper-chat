@@ -1,35 +1,31 @@
-import type { DisconnectReason, Server, Socket } from 'socket.io'
-import { userIsOnline } from '../../modules/redis/online.service.js'
-import type { MessageDTO, MessageSentDTO } from 'src/models/dto/messange.dto.js'
-import { decodeToken } from '../../middleware/auth.middleware.js'
+import type { DisconnectReason } from 'socket.io'
+import { updateUserOnlineStatus } from '../../modules/redis/online.service.js'
+import type { MessageDTO, MessageSentDTO } from '../../models/dto/messange.dto.js'
 import { MessageStatus } from '@prisma/client'
 import { fetchPendingMessage, storeNewMessage, updateStatus } from '../../modules/chat/chat.service.js'
-import { updateMessageStatus } from 'src/modules/chat/chat.repository.js'
+import { updateMessageStatus } from '../../modules/chat/chat.repository.js'
+import type { AppIO, AppSocket } from '../SocketServer.js'
 
 const NEW_MESSAGE = 'NEW_MESSAGE'
 const RECOVERY_CONNECTION = 'RECOVERY_CONNECTION'
 
-export const initConnection = (io: Server) => {
+export const initConnection = (io: AppIO) => {
   /**
    * register user connection and events
    * @argument Socket
    */
-  io.on('connection', async (socket: Socket) => {
-    const token = socket.handshake.auth['token']
+  io.on('connection', async (socket: AppSocket) => {
+    const user = socket.data.user
+
     /**
      * Set user connection as online
      */
-    const user = await userIsOnline(token, socket.id)
+    await updateUserOnlineStatus(user, true)
 
-    if (!user) {
-      socket.disconnect()
-      return
-    } else {
-      /**
-       * Create a private message room for each user connection
-       */
-      await socket.join(user.userId)
-    }
+    /**
+     * Create a Room chat for user connection
+     */
+    await socket.join(user.userId)
 
     if (!socket.recovered) {
       try {
@@ -92,8 +88,8 @@ export const initConnection = (io: Server) => {
 
     socket.on('disconnect', async (reason: DisconnectReason) => {
       try {
-        const token = socket.handshake.auth.token
-        const user = decodeToken(token)
+        const user = socket.data.user
+        await updateUserOnlineStatus(user, false)
         console.info('socket disconnected', {
           socketId: socket.id,
           userId: user.email,

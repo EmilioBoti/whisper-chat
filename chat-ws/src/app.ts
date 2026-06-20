@@ -7,6 +7,7 @@ import { initConnection } from './socket/events/initConnection.js'
 import chatRoutes from './routes/chat.route.js'
 import userRoutes from './routes/user.route.js'
 import { errorMiddleware } from './middleware/error.middleware.js'
+import { socketMiddleware } from './middleware/socket.middleware.js'
 
 const port = Number(process.env.CHAT_WS_SERVER_PORT) || 3002
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
@@ -22,6 +23,7 @@ const io = SocketServer.initSocket(server)
 app.set('trust proxy', true)
 
 //Middlewares
+io.use(socketMiddleware)
 app.use(express.json())
 
 //API Endpoints

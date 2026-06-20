@@ -24,6 +24,6 @@ export const setUserOffline = async (userId: string): Promise<number> => {
   return await redisClient.del(onlineKey(userId))
 }
 
-export const updateSocketConnction = async (userId: string, socketId: string): Promise<number> => {
-  return await redisClient.hSet(onlineKey(userId), { socketId: socketId })
+export const updateSocketConnction = async (userId: string, user: { id: string; email: string }): Promise<number> => {
+  return await redisClient.hSet(onlineKey(userId), user)
 }
