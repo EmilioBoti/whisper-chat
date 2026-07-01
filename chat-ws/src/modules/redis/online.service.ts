@@ -1,4 +1,4 @@
-import type { AuthPayload } from 'src/models/schema/authPayload.js'
+import type { AuthPayload } from '../../models/schema/authPayload.js'
 import { updateSocketConnction, setUserOffline } from './online.repository.js'
 
 export const updateUserOnlineStatus = async (user: AuthPayload, status: boolean): Promise<void> => {

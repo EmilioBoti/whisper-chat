@@ -1,7 +1,7 @@
 import type { ExtendedError, Socket } from 'socket.io'
 import type { AuthPayload } from '../models/schema/authPayload.js'
 import { varifyToken } from './auth.middleware.js'
-import { UnAuthorized } from 'src/lib/errors/Unauthorized.js'
+import { UnAuthorized } from '../lib/errors/Unauthorized.js'
 
 export const socketMiddleware = async (socket: Socket, next: (err?: ExtendedError) => void) => {
   const error = new UnAuthorized('Invalid or expired token.')
