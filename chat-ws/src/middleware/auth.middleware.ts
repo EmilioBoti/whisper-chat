@@ -53,4 +53,13 @@ export const varifyToken = (token: string): AuthPayload => {
   }
 }
 
+export const decodeToken = (token: string): AuthPayload => {
+  try {
+    const payload = jwt.decode(token) as AuthPayload
+    return payload
+  } catch {
+    throw new UnAuthorized('Invalid or expired token.')
+  }
+}
+
 export default authMiddleware

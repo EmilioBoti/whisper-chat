@@ -1,21 +1,15 @@
+import type { AuthPayload } from '../../models/schema/authPayload.js'
 import { updateSocketConnction, setUserOffline } from './online.repository.js'
 
-export const userIsOnline = async (userId: string, socketId: string): Promise<boolean> => {
+export const updateUserOnlineStatus = async (user: AuthPayload, status: boolean): Promise<void> => {
   try {
-    await updateSocketConnction(userId, socketId)
-    return true
+    if (status) {
+      await updateSocketConnction(user.userId, { id: user.userId, email: user.email })
+    } else {
+      await setUserOffline(user.userId)
+    }
+    await updateSocketConnction(user.userId, { id: user.userId, email: user.email })
   } catch (error) {
     console.error('Error setting user online:', error)
-    return false
-  }
-}
-
-export const userIsOffline = async (userId: string): Promise<boolean> => {
-  try {
-    const result = await setUserOffline(userId)
-    return result === 1
-  } catch (error) {
-    console.error('Error setting user offline:', error)
-    return false
   }
 }

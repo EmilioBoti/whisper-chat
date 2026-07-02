@@ -1,7 +1,7 @@
 export class SimpleProfile {
   public id = ''
   public name = ''
-  public photo?: string | null
+  public photo?: string | null | undefined
   public isPublic = true
 
   constructor(id: string, name: string, photo: string | null, isPublic: boolean) {

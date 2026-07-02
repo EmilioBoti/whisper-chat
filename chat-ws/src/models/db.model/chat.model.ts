@@ -9,7 +9,11 @@ type MemberWithProfile = Prisma.ChatMemberGetPayload<{
 }>
 
 type ChatMemberProfile = Prisma.ChatGetPayload<{
-  include: { members: { include: { profile: true } } }
+  include: { members: { include: { profile: true } }; messages: true }
 }>
 
-export { ChatWithMembers, ChatMemberProfile, MemberWithProfile }
+type ChatWithMessage = Prisma.ChatGetPayload<{
+  include: { members: false; messages: true }
+}>
+
+export { ChatWithMembers, ChatMemberProfile, MemberWithProfile, ChatWithMessage }

@@ -1,6 +1,7 @@
 import type { ChatType, Message } from '@prisma/client'
+import { MessageStatus } from '@prisma/client'
 import { prisma } from '../../lib/config/prisma.js'
-import type { ChatMemberProfile, ChatWithMembers } from '../../models/db.model/chat.model.js'
+import type { ChatMemberProfile, ChatWithMembers, ChatWithMessage } from '../../models/db.model/chat.model.js'
 
 const directType: ChatType = 'DIRECT'
 
@@ -40,12 +41,44 @@ export const findChatMessages = async (id: string, limit: number, cursor?: strin
   })
 }
 
-export const storeMessage = async (chatId: string, senderId: string, content: string): Promise<Message> => {
+export const storeMessage = async (id: string, chatId: string, senderId: string, content: string): Promise<Message> => {
   return await prisma.message.create({
     data: {
+      id: id,
       chatId: chatId,
       senderId: senderId,
       content: content,
+    },
+  })
+}
+
+export const updateMessageStatus = async (messageIds: string[], status: MessageStatus) => {
+  await prisma.message.updateMany({
+    where: {
+      id: {
+        in: messageIds,
+      },
+    },
+    data: {
+      status: status,
+    },
+  })
+}
+
+export const findPendingMessage = async (userId: string): Promise<ChatWithMessage[]> => {
+  return prisma.chat.findMany({
+    where: {
+      members: {
+        some: { userId },
+      },
+    },
+    include: {
+      messages: {
+        where: {
+          OR: [{ status: MessageStatus.PENDING }, { status: MessageStatus.SENT }],
+          NOT: { senderId: userId },
+        },
+      },
     },
   })
 }
@@ -62,6 +95,10 @@ export const getUserChats = async (userId: string): Promise<ChatMemberProfile[]>
         include: {
           profile: true,
         },
+      },
+      messages: {
+        take: 1,
+        orderBy: { id: 'desc' },
       },
     },
   })
