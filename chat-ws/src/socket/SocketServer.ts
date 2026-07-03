@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Server as HttpServer } from 'http'
 import type { Socket } from 'socket.io'
 import { Server as ServerSocket } from 'socket.io'
