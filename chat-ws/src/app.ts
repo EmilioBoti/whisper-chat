@@ -27,9 +27,9 @@ io.use(socketMiddleware)
 app.use(express.json())
 
 //API Endpoints
-app.get('/api/health', (req: Request, res: Response) => res.send('Chat WebSocket Server is running!!!'))
-app.use('/api/chat', chatRoutes)
-app.use('/api/user', userRoutes)
+app.get('/health', (req: Request, res: Response) => res.send('Chat WebSocket Server is running!!!'))
+app.use('/chat', chatRoutes)
+app.use('/user', userRoutes)
 
 /**
  * Register user connection and events

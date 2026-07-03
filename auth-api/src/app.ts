@@ -36,8 +36,8 @@ app.use(express.json())
 app.use(errorMiddleware)
 
 //Routes
-app.get('/api/healty', (req: Request, res: Response) => res.send('Auth server is running!'))
-app.use('/api/', authRoutes)
+app.get('/health', (req: Request, res: Response) => res.send('Auth server is running!'))
+app.use('/auth', authRoutes)
 
 /**
  * MUST BE LAST
