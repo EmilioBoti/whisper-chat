@@ -75,12 +75,12 @@ services:
     networks:
       - backend_network
   redis-cache:
-    image: redis:latest
+    image: redis:8-alpine
     restart: always
     env_file:
       - .env.development
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_DB_PASSWORD}
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
