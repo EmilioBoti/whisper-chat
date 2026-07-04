@@ -89,3 +89,13 @@ model Profile {
   @@index([id])
 
 }
+
+model Notification {
+  id                    Int @id() @default(autoincrement())
+  userId                String
+  enabled               Boolean @default(true)
+  inAppSoundEnabled     Boolean @default(true)
+
+  @@unique([userId])
+
+}
