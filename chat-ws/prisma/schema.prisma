@@ -85,17 +85,19 @@ model Profile {
   updatedAt   DateTime @updatedAt
 
   members   ChatMember[]
+  settings UserSettings[]
 
   @@index([id])
 
 }
 
-model Notification {
-  id                    Int @id() @default(autoincrement())
-  userId                String
-  enabled               Boolean @default(true)
+model UserSettings {
+  userId                String @id()
+
+  // NOTIFICATIONS
+  pushEnabled           Boolean @default(true)
   inAppSoundEnabled     Boolean @default(true)
 
-  @@unique([userId])
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
 
 }
