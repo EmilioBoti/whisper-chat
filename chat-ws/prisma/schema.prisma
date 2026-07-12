@@ -33,12 +33,18 @@ enum MessageType {
   TEXT
 }
 
+enum FriendShipStatus {
+  PENDING
+  ACCAPTED
+  REJECTED
+}
+
 model Chat {
   id        String @id @default(uuid())
   type      ChatType
   createdBy String
   createdAt DateTime @default(now())
-  directKey String? @unique
+  directKey String? @unique // created by both user's ids
 
   members   ChatMember[]
   messages  Message[]
@@ -84,11 +90,12 @@ model Profile {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  members   ChatMember[]
-  settings UserSettings[]
-
-  @@index([id])
-
+  members     ChatMember[]
+  settings    UserSettings[]
+  friendshipsAsA       UserFriendShip[] @relation("FriendshipsAsA")
+  friendshipsAsB       UserFriendShip[] @relation("FriendshipsAsB")
+  sentNotifications   UserFriendNotification[] @relation("NotificationSender")
+  receivedNotifications   UserFriendNotification[] @relation("NotificationReceiver")
 }
 
 model UserSettings {
@@ -100,4 +107,36 @@ model UserSettings {
 
   user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+}
+
+model UserFriendNotification {
+  id              Int @id @default(autoincrement())
+  notiKey         String @unique // created by both user's ids
+  senserId        String
+  receiverId      String
+  status          FriendShipStatus
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
+
+  sender Profile @relation("NotificationSender", fields: [senserId], references: [id], onDelete: Cascade)
+  recuiver Profile @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senserId])
+  @@index([receiverId])
+
+}
+
+model UserFriendShip {
+  id              Int @id @default(autoincrement())
+  friendsKey      String @unique // created by both user's ids
+  userIdA         String
+  userIdB         String
+  senderId        String
+  createdAt       DateTime @default(now())
+
+  friendshipsAsA Profile @relation("FriendshipsAsA", fields: [userIdA], references: [id], onDelete: Cascade)
+  friendshipsAsB Profile @relation("FriendshipsAsB", fields: [userIdB], references: [id], onDelete: Cascade)
+
+  @@unique([userIdA, userIdB])
+  @@index([userIdB])
 }
