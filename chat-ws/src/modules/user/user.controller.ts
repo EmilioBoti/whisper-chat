@@ -3,11 +3,10 @@ import { BadRequestError } from '../../lib/errors/BadRequestError.js'
 import { createUserProfile, exploreUsers } from './user.service.js'
 
 export const createProfile = async (req: Request, res: Response) => {
-  const { id, name } = req.body
+  const { id, name, email } = req.body
+  if (!id || !name || !email) throw new BadRequestError('asdas')
 
-  if (!id || !name) throw new BadRequestError()
-
-  const result = await createUserProfile({ id, name })
+  const result = await createUserProfile({ id, name, email })
   return res.status(201).json({ ...result })
 }
 

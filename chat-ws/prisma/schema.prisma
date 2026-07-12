@@ -82,6 +82,7 @@ model Message {
 model Profile {
   id          String @id
   name        String
+  email       String @unique
   lastname    String?
   birthDate   DateTime?
   photo       String?
@@ -114,7 +115,7 @@ model UserFriendNotification {
   notiKey         String @unique // created by both user's ids
   senserId        String
   receiverId      String
-  status          FriendShipStatus
+  status          FriendShipStatus @default(PENDING)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @default(now())
 

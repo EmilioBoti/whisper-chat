@@ -9,6 +9,7 @@ export const toSimpleUser = (userProfile: Profile): SimpleProfile => {
   return {
     id: userProfile.id,
     name: userProfile.name,
+    email: userProfile.email,
     photo: userProfile.photo,
     isPublic: userProfile.isPublic,
   }

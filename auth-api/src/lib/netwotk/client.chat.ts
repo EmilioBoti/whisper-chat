@@ -3,9 +3,9 @@ import InternalService from './ClientService.js'
 
 const service = new InternalService(process.env.CLIENT_CHAT_BASE_URL || '')
 
-export const createProfile = async (id: string, name: string): Promise<SimpleProfile> => {
+export const createProfile = async (id: string, name: string, email: string): Promise<SimpleProfile> => {
   return await service.request<SimpleProfile>('/user/create-profile', {
     method: 'POST',
-    body: JSON.stringify({ id, name }),
+    body: JSON.stringify({ id, name, email }),
   })
 }

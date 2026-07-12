@@ -7,6 +7,7 @@ export const createProfile = async (userProfile: SimpleUser): Promise<Profile> =
     data: {
       id: userProfile.id,
       name: userProfile.name,
+      email: userProfile.email,
     },
   })
 }
