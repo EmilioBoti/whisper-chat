@@ -6,6 +6,7 @@ import { SocketServer } from './socket/SocketServer.js'
 import { initConnection } from './socket/events/initConnection.js'
 import chatRoutes from './routes/chat.route.js'
 import userRoutes from './routes/user.route.js'
+import notificationRoutes from './routes/notification.route.js'
 import settingsRoutes from './routes/settings.route.js'
 import { errorMiddleware } from './middleware/error.middleware.js'
 import { socketMiddleware } from './middleware/socket.middleware.js'
@@ -31,6 +32,7 @@ app.use(express.json())
 app.get('/health', (req: Request, res: Response) => res.send('Chat WebSocket Server is running!!!'))
 app.use('/chat', chatRoutes)
 app.use('/user', userRoutes)
+app.use('/notification', notificationRoutes)
 app.use('/settings', settingsRoutes)
 
 /**

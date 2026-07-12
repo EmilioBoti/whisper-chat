@@ -35,7 +35,7 @@ enum MessageType {
 
 enum FriendShipStatus {
   PENDING
-  ACCAPTED
+  ACCEPTED
   REJECTED
 }
 

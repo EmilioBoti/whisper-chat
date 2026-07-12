@@ -4,7 +4,7 @@ import { createUserProfile, exploreUsers } from './user.service.js'
 
 export const createProfile = async (req: Request, res: Response) => {
   const { id, name, email } = req.body
-  if (!id || !name || !email) throw new BadRequestError('asdas')
+  if (!id || !name || !email) throw new BadRequestError('Not user data provided')
 
   const result = await createUserProfile({ id, name, email })
   return res.status(201).json({ ...result })
