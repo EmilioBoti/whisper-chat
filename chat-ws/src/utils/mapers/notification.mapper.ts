@@ -27,3 +27,14 @@ const parseToFriendStatus = (status: FriendShipStatus): Status => {
   }
   return 'PENDING'
 }
+
+export const parseToFriendStatusEntity = (status: string): FriendShipStatus => {
+  if (status === 'PENDING') {
+    return FriendShipStatus.PENDING
+  } else if (status === 'ACCEPTED') {
+    return FriendShipStatus.ACCEPTED
+  } else if (status === 'REJECTED') {
+    return FriendShipStatus.REJECTED
+  }
+  return FriendShipStatus.PENDING
+}
