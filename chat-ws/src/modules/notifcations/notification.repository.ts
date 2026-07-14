@@ -1,8 +1,10 @@
 import { prisma } from '../../lib/config/prisma.js'
-import type { FriendShipStatus, UserFriendNotification } from '@prisma/client'
+import type { UserFriendNotification } from '@prisma/client'
+import { FriendShipStatus } from '@prisma/client'
 import { generateUniqueKey } from '../../utils/GenerateKey.js'
+import type { UserRequestWithSenderProfile } from '../../models/db.model/chat.model.js'
 
-export const createNotification = async (senderId: string, receiverId: string): Promise<UserFriendNotification> => {
+export const createUserRequest = async (senderId: string, receiverId: string): Promise<UserFriendNotification> => {
   const key = generateUniqueKey(senderId, receiverId)
   return prisma.userFriendNotification.create({
     data: {
@@ -36,5 +38,15 @@ export const updateFriendShipStatus = async (id: number, status: FriendShipStatu
     })
 
     return updated
+  })
+}
+
+export const findUserNotificationRequest = async (userId: string): Promise<UserRequestWithSenderProfile[]> => {
+  return await prisma.userFriendNotification.findMany({
+    where: {
+      receiverId: userId,
+      status: FriendShipStatus.PENDING,
+    },
+    include: { sender: true },
   })
 }

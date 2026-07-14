@@ -16,4 +16,21 @@ type ChatWithMessage = Prisma.ChatGetPayload<{
   include: { members: false; messages: true }
 }>
 
-export { ChatWithMembers, ChatMemberProfile, MemberWithProfile, ChatWithMessage }
+type UserRequestWithSenderProfile = Prisma.UserFriendNotificationGetPayload<{
+  select: {
+    id: true
+    status: true
+    receiverId: true
+    createdAt: true
+    sender: {
+      select: {
+        id: true
+        name: true
+        photo: true
+        isPublic: true
+      }
+    }
+  }
+}>
+
+export { ChatWithMembers, ChatMemberProfile, MemberWithProfile, ChatWithMessage, UserRequestWithSenderProfile }

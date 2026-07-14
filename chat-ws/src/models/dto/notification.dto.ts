@@ -10,7 +10,8 @@ export interface NotificationDto {
 
 export interface FriendNotificationDto {
   id: string
-  senderId: string
-  receiver: string
+  name: string
+  photo?: string | null | undefined
+  isPublic: boolean
   status: FriendShipStatus
 }

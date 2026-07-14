@@ -1,18 +1,37 @@
 import type { UserFriendNotification } from '@prisma/client'
 import { FriendShipStatus } from '@prisma/client'
-import type { FriendShipStatus as Status, NotificationDto } from '../../models/dto/notification.dto.js'
+import type {
+  FriendShipStatus as Status,
+  NotificationDto,
+  NotificationType,
+} from '../../models/dto/notification.dto.js'
+import type { UserRequestWithSenderProfile } from 'src/models/db.model/chat.model.js'
 
-export const toFriendShipNotification = (friendShip: UserFriendNotification): NotificationDto => {
+export const toUseRequestDto = (
+  requests: UserRequestWithSenderProfile[],
+  type: NotificationType,
+): NotificationDto[] => {
+  return requests.map((req) => {
+    return {
+      id: req.id.toString(),
+      type: type,
+      friend: {
+        id: req.sender.id,
+        name: req.sender.name,
+        photo: req.sender.photo,
+        isPublic: req.sender.isPublic,
+        status: parseToFriendStatus(req.status),
+      },
+      createdAt: req.createdAt.toISOString(),
+    }
+  })
+}
+
+export const toFriendShipRequestDto = (friendShip: UserFriendNotification, type: NotificationType): NotificationDto => {
   const id = friendShip.id.toString()
   return {
     id: id,
-    type: 'FRIENDSHIP',
-    friend: {
-      id: id,
-      senderId: friendShip.senserId,
-      receiver: friendShip.receiverId,
-      status: parseToFriendStatus(friendShip.status),
-    },
+    type: type,
     createdAt: friendShip.createdAt.toISOString(),
   }
 }
