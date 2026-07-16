@@ -1,3 +1,5 @@
+import type { FriendShipStatus } from '@prisma/client'
+
 export interface ProfileUserDto {
   id: string
   name: string
@@ -9,5 +11,7 @@ export interface ProfileUserDto {
   createdAt: string
 }
 
-export type ExploreUserDto = Pick<ProfileUserDto, 'id' | 'name' | 'email'> & { isFriend: boolean }
+export type ExploreUserDto = Omit<ProfileUserDto, 'about' | 'birthdate' | 'createdAt'> & {
+  friendStatus?: FriendShipStatus | undefined | null
+}
 export type BasicUserInfoDto = Pick<ProfileUserDto, 'id' | 'name' | 'email' | 'isPublic' | 'photo'>

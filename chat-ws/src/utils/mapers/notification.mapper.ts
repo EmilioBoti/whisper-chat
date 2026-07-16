@@ -5,7 +5,7 @@ import type {
   NotificationDto,
   NotificationType,
 } from '../../models/dto/notification.dto.js'
-import type { UserRequestWithSenderProfile } from 'src/models/db.model/chat.model.js'
+import type { UserRequestWithSenderProfile } from '../../models/db.model/chat.model.js'
 
 export const toUseRequestDto = (
   requests: UserRequestWithSenderProfile[],
@@ -36,7 +36,7 @@ export const toFriendShipRequestDto = (friendShip: UserFriendNotification, type:
   }
 }
 
-const parseToFriendStatus = (status: FriendShipStatus): Status => {
+export const parseToFriendStatus = (status: FriendShipStatus): Status => {
   if (status === FriendShipStatus.PENDING) {
     return 'PENDING'
   } else if (status === FriendShipStatus.ACCEPTED) {

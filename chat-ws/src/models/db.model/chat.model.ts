@@ -33,4 +33,15 @@ type UserRequestWithSenderProfile = Prisma.UserFriendNotificationGetPayload<{
   }
 }>
 
-export { ChatWithMembers, ChatMemberProfile, MemberWithProfile, ChatWithMessage, UserRequestWithSenderProfile }
+type ProfileWithUserRequest = Prisma.ProfileGetPayload<{
+  include: { receivedNotifications: true; sentNotifications: true }
+}>
+
+export {
+  ChatWithMembers,
+  ChatMemberProfile,
+  MemberWithProfile,
+  ChatWithMessage,
+  UserRequestWithSenderProfile,
+  ProfileWithUserRequest,
+}
