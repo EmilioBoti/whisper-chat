@@ -1,8 +1,8 @@
 import type { Profile } from '@prisma/client'
 import { prisma } from '../../lib/config/prisma.js'
-import type { SimpleUser } from '../../models/dto/user.dto.js'
+import type { CreateUserProfileDto } from '../../models/dto/auth.dto.js'
 
-export const createProfile = async (userProfile: SimpleUser): Promise<Profile> => {
+export const createProfile = async (userProfile: CreateUserProfileDto): Promise<Profile> => {
   return prisma.profile.create({
     data: {
       id: userProfile.id,

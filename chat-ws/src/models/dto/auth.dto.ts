@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 export class AuthUser {
   id = ''
   name = ''
@@ -16,7 +18,7 @@ export class AuthUser {
 
 export interface LoginResponse {
   tokens: AuthToken
-  user: SimpleAuthUser
+  user: AuthUserDto
 }
 
 export interface AuthJwtPayload {
@@ -34,6 +36,13 @@ export interface AuthToken {
   refreshToken: string
 }
 
-export type SimpleAuthUser = Omit<AuthUser, 'password'>
+export type AuthUserDto = Omit<AuthUser, 'password'>
+export type CreateUserProfileDto = Pick<AuthUser, 'id' | 'name' | 'email'>
 type BaseCredential = Pick<AuthUser, 'name' | 'email'>
 export type NewUserCredential = BaseCredential & { password: string }
+
+export const CreateProfileSchema = z.object({
+  id: z.string().nonempty(),
+  name: z.string().min(3),
+  email: z.email(),
+})

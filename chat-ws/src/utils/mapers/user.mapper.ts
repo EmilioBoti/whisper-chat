@@ -1,11 +1,11 @@
 import type { Profile } from '@prisma/client'
-import type { SimpleProfile } from '../../models/dto/user.dto.js'
+import type { BasicUserInfoDto } from '../../models/dto/user.dto.js'
 
-export const toSimpleUserList = (profiles: Profile[]): SimpleProfile[] => {
-  return profiles.map((user) => toSimpleUser(user))
+export const toBasicProfileInfoList = (profiles: Profile[]): BasicUserInfoDto[] => {
+  return profiles.map((user) => toBasicProfileInfo(user))
 }
 
-export const toSimpleUser = (userProfile: Profile): SimpleProfile => {
+export const toBasicProfileInfo = (userProfile: Profile): BasicUserInfoDto => {
   return {
     id: userProfile.id,
     name: userProfile.name,

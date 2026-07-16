@@ -1,17 +1,13 @@
-export class SimpleProfile {
-  public id = ''
-  public name = ''
-  public email = ''
-  public photo?: string | null | undefined
-  public isPublic = true
-
-  constructor(id: string, name: string, email: string, photo: string | null, isPublic: boolean) {
-    this.id = id
-    this.name = name
-    this.email = email
-    this.photo = photo
-    this.isPublic = isPublic
-  }
+export interface ProfileUserDto {
+  id: string
+  name: string
+  email: string
+  photo?: string | null | undefined
+  isPublic: boolean
+  about: string
+  birthdate: string
+  createdAt: string
 }
 
-export type SimpleUser = Pick<SimpleProfile, 'id' | 'name' | 'email'>
+export type ExploreUserDto = Pick<ProfileUserDto, 'id' | 'name' | 'email'> & { isFriend: boolean }
+export type BasicUserInfoDto = Pick<ProfileUserDto, 'id' | 'name' | 'email' | 'isPublic' | 'photo'>

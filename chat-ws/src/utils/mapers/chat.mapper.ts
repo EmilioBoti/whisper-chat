@@ -6,7 +6,7 @@ import type {
   MemberWithProfile,
 } from '../../models/db.model/chat.model.js'
 import type { ChatRoom, Member, SimpleChat } from '../../models/dto/chat.dto.js'
-import type { SimpleProfile } from '../../models/dto/user.dto.js'
+import type { BasicUserInfoDto } from '../../models/dto/user.dto.js'
 import type { PaginatedMessages } from '../../models/dto/messange.dto.js'
 import { MessageDTO } from '../../models/dto/messange.dto.js'
 
@@ -58,14 +58,15 @@ export const toMember = (member: MemberWithProfile): Member => {
     chatId: member.chatId,
     role: member.role.toString(),
     joinedAt: member.joinedAt.toISOString(),
-    profile: toProfile(member.profile),
+    profile: toBasicProfileInfo(member.profile),
   }
 }
 
-export const toProfile = (profile: Profile): SimpleProfile => {
+export const toBasicProfileInfo = (profile: Profile): BasicUserInfoDto => {
   return {
     id: profile.id,
     name: profile.name,
+    email: profile.email,
     photo: profile.photo,
     isPublic: profile.isPublic,
   }

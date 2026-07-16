@@ -1,21 +1,22 @@
 import { createProfile, findUsers } from './user.repository.js'
 import { internalErrorHandler } from '../../lib/errors/InternalErrorHandler.js'
-import type { SimpleProfile, SimpleUser } from '../../models/dto/user.dto.js'
-import { toSimpleUser, toSimpleUserList } from '../../utils/mapers/user.mapper.js'
+import { toBasicProfileInfo, toBasicProfileInfoList } from '../../utils/mapers/user.mapper.js'
+import type { CreateUserProfileDto } from '../../models/dto/auth.dto.js'
+import type { BasicUserInfoDto } from '../../models/dto/user.dto.js'
 
-export const createUserProfile = async (user: SimpleUser): Promise<SimpleProfile> => {
+export const createUserProfile = async (user: CreateUserProfileDto): Promise<BasicUserInfoDto> => {
   try {
     const result = await createProfile(user)
-    return toSimpleUser(result)
+    return toBasicProfileInfo(result)
   } catch (error) {
     throw internalErrorHandler(error)
   }
 }
 
-export const exploreUsers = async (): Promise<SimpleProfile[]> => {
+export const exploreUsers = async (): Promise<BasicUserInfoDto[]> => {
   try {
     const result = await findUsers(false)
-    return toSimpleUserList(result)
+    return toBasicProfileInfoList(result)
   } catch (error) {
     throw internalErrorHandler(error)
   }
