@@ -20,7 +20,7 @@ export const updateFriendShipRequest = async (req: Request, res: Response) => {
   if (!id || !action) throw new BadRequestError('Not status field provided')
 
   const status = parseToFriendStatusEntity(action)
-  const notification = await updateFriendShip(id.toLocaleString(), status)
+  const notification = await updateFriendShip(id.toString(), status)
   return res.json(notification)
 }
 

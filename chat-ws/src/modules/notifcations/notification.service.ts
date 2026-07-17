@@ -1,4 +1,4 @@
-import type { FriendShipStatus, NotificationDto } from '../../models/dto/notification.dto.js'
+import type { FriendShipStatus, NotificationDto, UpdatedUserRequestDto } from '../../models/dto/notification.dto.js'
 import { internalErrorHandler } from '../../lib/errors/InternalErrorHandler.js'
 import { createUserRequest, updateFriendShipStatus, findUserNotificationRequest } from './notification.repository.js'
 import { toFriendShipRequestDto, toUseRequestDto } from '../../utils/mapers/notification.mapper.js'
@@ -12,7 +12,10 @@ export const createFriendShisRequest = async (sender: string, receiver: string):
   }
 }
 
-export const updateFriendShip = async (notificationId: string, status: FriendShipStatus): Promise<NotificationDto> => {
+export const updateFriendShip = async (
+  notificationId: string,
+  status: FriendShipStatus,
+): Promise<UpdatedUserRequestDto> => {
   try {
     const result = await updateFriendShipStatus(Number(notificationId), status)
     return toFriendShipRequestDto(result, 'FRIENDSHIP')

@@ -4,6 +4,7 @@ import type {
   FriendShipStatus as Status,
   NotificationDto,
   NotificationType,
+  UpdatedUserRequestDto,
 } from '../../models/dto/notification.dto.js'
 import type { UserRequestWithSenderProfile } from '../../models/db.model/chat.model.js'
 
@@ -27,11 +28,15 @@ export const toUseRequestDto = (
   })
 }
 
-export const toFriendShipRequestDto = (friendShip: UserFriendNotification, type: NotificationType): NotificationDto => {
+export const toFriendShipRequestDto = (
+  friendShip: UserFriendNotification,
+  type: NotificationType,
+): UpdatedUserRequestDto => {
   const id = friendShip.id.toString()
   return {
     id: id,
     type: type,
+    status: friendShip.status,
     createdAt: friendShip.createdAt.toISOString(),
   }
 }

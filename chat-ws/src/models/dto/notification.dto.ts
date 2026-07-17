@@ -15,3 +15,5 @@ export interface FriendNotificationDto {
   isPublic: boolean
   status: FriendShipStatus
 }
+
+export type UpdatedUserRequestDto = Omit<NotificationDto, 'friend'> & { status: FriendShipStatus }
