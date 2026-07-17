@@ -12,6 +12,12 @@ export interface ProfileUserDto {
 }
 
 export type ExploreUserDto = Omit<ProfileUserDto, 'about' | 'birthdate' | 'createdAt'> & {
-  friendStatus?: FriendShipStatus | undefined | null
+  request?:
+    | {
+        id: string
+        friendStatus?: FriendShipStatus | undefined | null
+      }
+    | undefined
+    | null
 }
 export type BasicUserInfoDto = Pick<ProfileUserDto, 'id' | 'name' | 'email' | 'isPublic' | 'photo'>
