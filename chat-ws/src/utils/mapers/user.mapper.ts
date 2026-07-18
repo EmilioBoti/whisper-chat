@@ -5,7 +5,7 @@ import { parseToFriendStatus } from './notification.mapper.js'
 
 export const toBasicProfileInfoList = (userId: string, profiles: ProfileWithUserRequest[]): ExploreUserDto[] => {
   return profiles.map((user) => {
-    const requests = [...user.sentNotifications, ...user.sentNotifications]
+    const requests = [...user.sentNotifications, ...user.receivedNotifications]
     const froundRequest = requests.find((it) => it.senserId === userId || it.receiverId === userId)
 
     const request = froundRequest?.id
