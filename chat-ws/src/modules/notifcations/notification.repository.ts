@@ -42,10 +42,17 @@ export const updateFriendShipStatus = async (id: number, status: FriendShipStatu
 }
 
 export const findUserNotificationRequest = async (userId: string): Promise<UserRequestWithSenderProfile[]> => {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+
   return await prisma.userFriendNotification.findMany({
     where: {
       receiverId: userId,
-      status: FriendShipStatus.PENDING,
+      status: {
+        not: FriendShipStatus.REJECTED,
+      },
+      createdAt: {
+        gte: thirtyDaysAgo,
+      },
     },
     include: { sender: true },
   })
