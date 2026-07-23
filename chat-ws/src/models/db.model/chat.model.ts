@@ -37,6 +37,15 @@ type ProfileWithUserRequest = Prisma.ProfileGetPayload<{
   include: { receivedNotifications: true; sentNotifications: true }
 }>
 
+type ProfileFriend = Prisma.ProfileGetPayload<{
+  select: {
+    id: true
+    name: true
+    photo: true
+    lastname: true
+  }
+}>
+
 export {
   ChatWithMembers,
   ChatMemberProfile,
@@ -44,4 +53,5 @@ export {
   ChatWithMessage,
   UserRequestWithSenderProfile,
   ProfileWithUserRequest,
+  ProfileFriend,
 }

@@ -1,6 +1,6 @@
 import type { Profile } from '@prisma/client'
-import type { BasicUserInfoDto, ExploreUserDto } from '../../models/dto/user.dto.js'
-import type { ProfileWithUserRequest } from '../../models/db.model/chat.model.js'
+import type { BasicUserInfoDto, ExploreUserDto, FriendUserDto } from '../../models/dto/user.dto.js'
+import type { ProfileFriend, ProfileWithUserRequest } from '../../models/db.model/chat.model.js'
 import { parseToFriendStatus } from './notification.mapper.js'
 
 export const toBasicProfileInfoList = (userId: string, profiles: ProfileWithUserRequest[]): ExploreUserDto[] => {
@@ -33,5 +33,14 @@ export const toBasicProfileInfo = (userProfile: Profile): BasicUserInfoDto => {
     email: userProfile.email,
     photo: userProfile.photo,
     isPublic: userProfile.isPublic,
+  }
+}
+
+export const toFriendProfileDto = (user: ProfileFriend): FriendUserDto => {
+  return {
+    id: user.id,
+    name: user.name,
+    lastname: user.lastname ?? '',
+    photo: user.photo,
   }
 }

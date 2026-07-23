@@ -4,6 +4,7 @@ export interface ProfileUserDto {
   id: string
   name: string
   email: string
+  lastname: string
   photo?: string | null | undefined
   isPublic: boolean
   about: string
@@ -11,7 +12,7 @@ export interface ProfileUserDto {
   createdAt: string
 }
 
-export type ExploreUserDto = Omit<ProfileUserDto, 'about' | 'birthdate' | 'createdAt'> & {
+export type ExploreUserDto = Omit<ProfileUserDto, 'about' | 'birthdate' | 'createdAt' | 'lastname'> & {
   request?:
     | {
         id: string
@@ -21,3 +22,4 @@ export type ExploreUserDto = Omit<ProfileUserDto, 'about' | 'birthdate' | 'creat
     | null
 }
 export type BasicUserInfoDto = Pick<ProfileUserDto, 'id' | 'name' | 'email' | 'isPublic' | 'photo'>
+export type FriendUserDto = Pick<ProfileUserDto, 'id' | 'name' | 'photo' | 'lastname'>

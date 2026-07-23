@@ -1,8 +1,8 @@
-import { createProfile, findUsers } from './user.repository.js'
+import { createProfile, findUserFriends, findUsers } from './user.repository.js'
 import { internalErrorHandler } from '../../lib/errors/InternalErrorHandler.js'
-import { toBasicProfileInfo, toBasicProfileInfoList } from '../../utils/mapers/user.mapper.js'
+import { toBasicProfileInfo, toBasicProfileInfoList, toFriendProfileDto } from '../../utils/mapers/user.mapper.js'
 import type { CreateUserProfileDto } from '../../models/dto/auth.dto.js'
-import type { BasicUserInfoDto, ExploreUserDto } from '../../models/dto/user.dto.js'
+import type { BasicUserInfoDto, ExploreUserDto, FriendUserDto } from '../../models/dto/user.dto.js'
 
 export const createUserProfile = async (user: CreateUserProfileDto): Promise<BasicUserInfoDto> => {
   try {
@@ -20,4 +20,12 @@ export const exploreUsers = async (userId: string): Promise<ExploreUserDto[]> =>
   } catch (error) {
     throw internalErrorHandler(error)
   }
+}
+
+export const getUserFriends = async (userId: string): Promise<FriendUserDto[]> => {
+  return await findUserFriends(userId)
+    .then((data) => data.map((user) => toFriendProfileDto(user)))
+    .catch((error) => {
+      throw internalErrorHandler(error)
+    })
 }

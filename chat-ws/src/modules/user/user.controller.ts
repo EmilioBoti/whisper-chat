@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
 import { BadRequestError } from '../../lib/errors/BadRequestError.js'
-import { createUserProfile, exploreUsers } from './user.service.js'
+import { createUserProfile, exploreUsers, getUserFriends } from './user.service.js'
 import { CreateProfileSchema } from '../../models/dto/auth.dto.js'
 
 export const createProfile = async (req: Request, res: Response) => {
@@ -16,5 +16,11 @@ export const createProfile = async (req: Request, res: Response) => {
 export const exploreNewUsers = async (req: Request, res: Response) => {
   const user = req.user
   const result = await exploreUsers(user.userId)
+  return res.status(200).json(result)
+}
+
+export const getUserFriendsController = async (req: Request, res: Response) => {
+  const userId = req.user.userId
+  const result = await getUserFriends(userId)
   return res.status(200).json(result)
 }
