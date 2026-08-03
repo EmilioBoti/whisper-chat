@@ -1,1 +1,2 @@
 export const USER_REGISTERED_CODE_P2002 = 'P2002'
+export const CODE_P2025 = 'P2025'

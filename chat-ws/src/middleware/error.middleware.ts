@@ -7,11 +7,13 @@ export const errorMiddleware = (err: Error, req: Request, res: Response, _next: 
 
   if (err instanceof AppError) {
     return res.status(err.status).json({
+      code: err.status,
       message: err.message,
     })
   }
 
   return res.status(500).json({
+    code: 500,
     message: 'Internal server error',
   })
 }
