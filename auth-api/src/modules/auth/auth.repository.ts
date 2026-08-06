@@ -4,7 +4,7 @@ import type { Session, User } from '@prisma/client'
 import { signJwtToken } from '../../lib/jwt.js'
 import type { AuthToken } from '../../models/dto/auth.dto.js'
 
-const accessTokenExpiresIn: string = process.env.NODE_ENV === 'production' ? '15m' : '1h'
+const accessTokenExpiresIn: string = process.env.NODE_ENV === 'production' ? '15m' : '1d'
 const refreshTokenExpiresIn = '30d'
 
 export const logUserIn = async (email: string): Promise<{ tokens: AuthToken; user: User } | null> => {

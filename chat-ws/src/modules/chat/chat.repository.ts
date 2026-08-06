@@ -1,28 +1,35 @@
-import type { ChatType, Message } from '@prisma/client'
+import type { Message } from '@prisma/client'
+import { ChatType } from '@prisma/client'
 import { MessageStatus } from '@prisma/client'
 import { prisma } from '../../lib/config/prisma.js'
 import type { ChatMemberProfile, ChatWithMembers, ChatWithMessage } from '../../models/db.model/chat.model.js'
 
-const directType: ChatType = 'DIRECT'
-
-const generateDirectKey = (userId: string, userBId: string): string => {
-  return [userId, userBId].sort().join('_')
-}
-
-export const upsertDirectChat = async (userId: string, userBId: string): Promise<ChatWithMembers> => {
-  const directKey = generateDirectKey(userId, userBId)
+export const upsertChat = async (
+  type: ChatType,
+  chatId: string,
+  userId: string,
+  members: { userId: string }[],
+  directKey?: string,
+): Promise<ChatWithMembers> => {
+  const condition = type === ChatType.DIRECT ? { directKey: directKey } : { id: chatId }
   const chat = prisma.chat.upsert({
-    where: { directKey: directKey },
+    where: condition,
     create: {
-      type: directType,
+      id: chatId,
+      type: type,
       createdBy: userId,
       directKey: directKey,
       members: {
-        create: [{ userId: userId }, { userId: userBId }],
+        create: members,
       },
     },
     include: { members: true },
-    update: {},
+    update: {
+      members: {
+        deleteMany: {},
+        create: members,
+      },
+    },
   })
   return chat
 }

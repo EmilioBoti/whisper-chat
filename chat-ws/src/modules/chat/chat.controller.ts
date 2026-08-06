@@ -1,16 +1,19 @@
 import type { Request, Response } from 'express'
-import { findOrCreateDirectChat, fetchUserChats, fetchChatRoomMessage } from './chat.service.js'
+import { createNewChat, fetchUserChats, fetchChatRoomMessage } from './chat.service.js'
 import { BadRequestError } from '../../lib/errors/BadRequestError.js'
+import { CreatedChat, ParamsSchema } from '../../models/validationSchema/chat.validation.js'
 
-export const openDirectChat = async (req: Request, res: Response) => {
-  const userId = req.params.userId as string
+export const createChatController = async (req: Request, res: Response) => {
   const user = req.user
-  if (!userId) {
-    throw new BadRequestError('UserId is not been provided')
-  }
-  const chat = await findOrCreateDirectChat(user.userId, userId)
 
-  return res.status(201).json({ ...chat })
+  const type = ParamsSchema.safeParse(req.params.type)
+  const data = CreatedChat.safeParse(req.body)
+
+  if (data.error || type.error) throw new BadRequestError(data.error?.message || type.error?.message)
+
+  const chat = await createNewChat(type.data, user.userId, data.data)
+
+  return res.status(201).json(chat)
 }
 
 export const getUserChats = async (req: Request, res: Response) => {

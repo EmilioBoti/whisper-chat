@@ -1,5 +1,5 @@
 import {
-  upsertDirectChat,
+  upsertChat,
   getUserChats,
   findChatMessages,
   storeMessage,
@@ -7,7 +7,7 @@ import {
   findPendingMessage,
 } from './chat.repository.js'
 import { internalErrorHandler } from '../../lib/errors/InternalErrorHandler.js'
-import type { SimpleChat, ChatRoom } from '../../models/dto/chat.dto.js'
+import type { NewChatSchema, ChatDto } from '../../models/dto/chat.dto.js'
 import {
   toSimpleChat,
   toListUserChat,
@@ -16,18 +16,29 @@ import {
   toMessages,
 } from '../../utils/mapers/chat.mapper.js'
 import type { MessageDTO, MessageSentDTO, PaginatedMessages } from '../../models/dto/messange.dto.js'
-import type { MessageStatus } from '@prisma/client'
+import type { ChatType, MessageStatus } from '@prisma/client'
+import { BadRequestError } from '../../lib/errors/BadRequestError.js'
 
-export const findOrCreateDirectChat = async (userId: string, userBId: string): Promise<SimpleChat> => {
-  try {
-    const chat = await upsertDirectChat(userId, userBId)
-    return toSimpleChat(chat)
-  } catch (error) {
-    throw internalErrorHandler(error)
-  }
+const generateDirectKey = (userId: string, userBId: string): string => {
+  return [userId, userBId].sort().join('_')
 }
 
-export const fetchUserChats = async (userId: string): Promise<ChatRoom[]> => {
+export const createNewChat = async (type: ChatType, userId: string, newChat: NewChatSchema): Promise<ChatDto> => {
+  const member = newChat.members.filter((member) => member !== userId)
+
+  if (member.length !== 1 || newChat.members.length < 2) throw new BadRequestError('It must be at least two members')
+
+  const directKey = generateDirectKey(userId, member[0])
+  const chatMembers = newChat.members.map((memberId) => ({ userId: memberId }))
+
+  return await upsertChat(type, newChat.chatId, userId, chatMembers, directKey)
+    .then((data) => toSimpleChat(data))
+    .catch((error) => {
+      throw internalErrorHandler(error)
+    })
+}
+
+export const fetchUserChats = async (userId: string): Promise<ChatDto[]> => {
   try {
     const chats = await getUserChats(userId)
     return toListUserChat(chats)
