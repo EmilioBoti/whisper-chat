@@ -9,6 +9,7 @@ export const createProfile = async (userProfile: CreateUserProfileDto): Promise<
       id: userProfile.id,
       name: userProfile.name,
       email: userProfile.email,
+      isPublic: true,
     },
   })
 }
